@@ -101,9 +101,7 @@ body { margin: 0; font-family: 'Segoe UI', sans-serif; background: #f8fafc; }
 .page-btn[disabled] { opacity: 0.4; cursor: not-allowed; }
 .page-info { font-size: 13px; color: #64748b; }
 
-/* Chart */
-.chart-container { width: 100%; }
-canvas { display: block; }
+.chart-container { width: 100%; min-height: 420px; }
 
 .hidden { display: none !important; }
 /* iOS対応: labelでinputを包む */
@@ -115,6 +113,7 @@ canvas { display: block; }
   .dropzone { min-height: 150px; }
 }
 </style>
+<script src="https://cdn.plot.ly/plotly-basic-3.0.1.min.js"></script>
 </head>
 <body>
 <div class="app">
@@ -202,9 +201,7 @@ canvas { display: block; }
       <div class="tab-content">
         <div id="tab-summary"></div>
         <div id="tab-chart" class="hidden">
-          <div id="chart-container" class="chart-container">
-            <canvas id="chart-canvas"></canvas>
-          </div>
+          <div id="chart-container" class="chart-container"></div>
         </div>
       </div>
     </div>
@@ -556,98 +553,44 @@ function changePage(delta) {
 // ===== 機能3: グラフ =====
 function renderChart() {
   var container = document.getElementById('chart-container');
-  var canvas = document.getElementById('chart-canvas');
   var loaded = ['ep','ev','epori'].filter(function(k){ return parsedData[k] && parsedData[k].length > 0; });
   if (!loaded.length) return;
 
-  var W = container.offsetWidth || container.clientWidth || 800;
-  if (W < 100) { setTimeout(renderChart, 100); return; }
-  var H = 420;
-  canvas.width = W; canvas.height = H;
-  var ctx = canvas.getContext('2d');
-  var mt = 30, mr = 40, mb = 70, ml = 80;
-  var cw = W - ml - mr, ch = H - mt - mb;
-
-  // 全データ収集（すでにソート済み）
-  var allTs = {}, allVals = [];
-  loaded.forEach(function(k) {
-    parsedData[k].forEach(function(d) { allTs[d.timestamp] = true; allVals.push(d.value); });
-  });
-  var sortedTs = Object.keys(allTs).sort();
-  if (!sortedTs.length) return;
-
-  var t0 = new Date(sortedTs[0].replace(/-/g, '/').replace('T', ' ')).getTime();
-  var t1 = new Date(sortedTs[sortedTs.length - 1].replace(/-/g, '/').replace('T', ' ')).getTime();
-  var tRange = t1 - t0 || 1;
-  var minV = Math.min.apply(null, allVals);
-  var maxV = Math.max.apply(null, allVals);
-  var vPad = (maxV - minV) * 0.06 || 1;
-  minV -= vPad; maxV += vPad;
-
-  // iOS Safari は "YYYY-MM-DDTHH:MM:SS"（タイムゾーンなし）をNaNにする
-  // "YYYY/MM/DD HH:MM:SS" 形式なら全ブラウザで安全
-  function tsToMs(ts) { return new Date(ts.replace(/-/g, '/').replace('T', ' ')).getTime(); }
-  function tsToX(ts) { return ml + (tsToMs(ts) - t0) / tRange * cw; }
-  function valToY(v)  { return mt + ch - (v - minV) / (maxV - minV) * ch; }
-
-  // 背景
-  ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, W, H);
-
-  // Y グリッド＆ラベル
-  var yTicks = 5;
-  for (var i = 0; i <= yTicks; i++) {
-    var v = minV + (maxV - minV) * i / yTicks;
-    var y = valToY(v);
-    ctx.strokeStyle = '#e2e8f0'; ctx.lineWidth = 1;
-    ctx.beginPath(); ctx.moveTo(ml, y); ctx.lineTo(ml + cw, y); ctx.stroke();
-    ctx.fillStyle = '#64748b'; ctx.font = '11px sans-serif'; ctx.textAlign = 'right';
-    var vLabel = Math.abs(v) >= 1000 ? (v / 1000).toFixed(1) + 'k' : v.toFixed(1);
-    ctx.fillText(vLabel, ml - 8, y + 4);
-  }
-
-  // X ラベル（日付 MM/DD）
-  var xTicks = Math.min(8, sortedTs.length);
-  var step = Math.max(1, Math.floor(sortedTs.length / xTicks));
-  ctx.fillStyle = '#64748b'; ctx.font = '11px sans-serif'; ctx.textAlign = 'center';
-  for (var j = 0; j < sortedTs.length; j += step) {
-    var x = tsToX(sortedTs[j]);
-    ctx.fillText(sortedTs[j].slice(5, 10).replace('-', '/'), x, H - mb + 18);
-    ctx.strokeStyle = '#f1f5f9'; ctx.lineWidth = 1;
-    ctx.beginPath(); ctx.moveTo(x, mt); ctx.lineTo(x, mt + ch); ctx.stroke();
-  }
-
-  // 軸
-  ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 1.5;
-  ctx.beginPath(); ctx.moveTo(ml, mt); ctx.lineTo(ml, mt + ch); ctx.lineTo(ml + cw, mt + ch); ctx.stroke();
-
-  // データライン（データはすでにソート済み）
-  loaded.forEach(function(key) {
+  var traces = loaded.map(function(key) {
     var data = parsedData[key];
-    ctx.strokeStyle = COLORS[key]; ctx.lineWidth = 2.5;
-    ctx.lineJoin = 'round'; ctx.lineCap = 'round';
-    ctx.beginPath();
-    var started = false;
-    for (var di = 0; di < data.length; di++) {
-      var x = tsToX(data[di].timestamp);
-      var y = valToY(data[di].value);
-      if (!started) { ctx.moveTo(x, y); started = true; } else ctx.lineTo(x, y);
-    }
-    ctx.stroke();
+    return {
+      x: data.map(function(d) { return d.timestamp.replace('T', ' '); }),
+      y: data.map(function(d) { return d.value; }),
+      type: 'scatter',
+      mode: 'lines',
+      name: LABELS[key],
+      line: { color: COLORS[key], width: 2 }
+    };
   });
 
-  // 凡例
-  var lx = ml + 14, ly = mt + 14;
-  loaded.forEach(function(key, i) {
-    var by = ly + i * 22;
-    ctx.strokeStyle = COLORS[key]; ctx.lineWidth = 2.5;
-    ctx.beginPath(); ctx.moveTo(lx, by); ctx.lineTo(lx + 22, by); ctx.stroke();
-    ctx.fillStyle = COLORS[key];
-    ctx.beginPath(); ctx.arc(lx + 11, by, 3.5, 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = '#334155'; ctx.font = 'bold 12px sans-serif'; ctx.textAlign = 'left';
-    ctx.fillText(LABELS[key], lx + 30, by + 4);
-    ctx.fillStyle = '#94a3b8'; ctx.font = '11px sans-serif';
-    ctx.fillText(parsedData[key].length.toLocaleString() + '件', lx + 80, by + 4);
-  });
+  var layout = {
+    margin: { t: 20, r: 20, b: 40, l: 60 },
+    xaxis: {
+      type: 'date',
+      tickformat: '%m/%d',
+      showgrid: true,
+      gridcolor: '#e2e8f0'
+    },
+    yaxis: {
+      showgrid: true,
+      gridcolor: '#e2e8f0',
+      tickformat: ',.1f'
+    },
+    legend: { x: 0.01, y: 0.99, bgcolor: 'rgba(255,255,255,0.85)', bordercolor: '#e2e8f0', borderwidth: 1 },
+    plot_bgcolor: '#fff',
+    paper_bgcolor: '#fff',
+    font: { family: 'Segoe UI, sans-serif', size: 12, color: '#334155' },
+    hovermode: 'x unified'
+  };
+
+  var config = { responsive: true, displayModeBar: false };
+
+  Plotly.newPlot(container, traces, layout, config);
 }
 
 // ===== ユーティリティ =====
