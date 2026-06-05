@@ -125,7 +125,7 @@ canvas { display: block; }
       </div>
       <div>
         <h1 class="header-title">データ比較ツール</h1>
-        <p class="header-subtitle">EP / EV / epori データを取り込んで比較分析</p>
+        <p class="header-subtitle">EP / EV / data3を取り込んで比較分析</p>
       </div>
     </div>
   </header>
@@ -138,7 +138,7 @@ canvas { display: block; }
       <div id="dz-ep" class="dropzone" tabindex="0" role="button">
         <input id="input-ep" type="file" accept=".xlsx,.xls" class="hidden">
         <div class="dropzone-inner">
-          <div class="file-tag tag-ep">EP データ</div>
+          <div class="file-tag tag-ep">data1</div>
           <div class="format-badge">.xlsx / .xls</div>
           <div class="dropzone-icon" id="icon-ep"><svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/></svg></div>
           <p class="dropzone-main" id="main-ep">ファイルをドロップ</p>
@@ -150,7 +150,7 @@ canvas { display: block; }
       <div id="dz-ev" class="dropzone" tabindex="0" role="button">
         <input id="input-ev" type="file" accept=".xlsx,.xls" class="hidden">
         <div class="dropzone-inner">
-          <div class="file-tag tag-ev">EV データ</div>
+          <div class="file-tag tag-ev">data2</div>
           <div class="format-badge">.xlsx / .xls</div>
           <div class="dropzone-icon" id="icon-ev"><svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/></svg></div>
           <p class="dropzone-main" id="main-ev">ファイルをドロップ</p>
@@ -162,7 +162,7 @@ canvas { display: block; }
       <div id="dz-epori" class="dropzone" tabindex="0" role="button">
         <input id="input-epori" type="file" accept=".csv,.xlsx,.xls" class="hidden">
         <div class="dropzone-inner">
-          <div class="file-tag tag-epori">epori データ</div>
+          <div class="file-tag tag-epori">data3</div>
           <div class="format-badge">.csv / .xlsx</div>
           <div class="dropzone-icon" id="icon-epori"><svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/></svg></div>
           <p class="dropzone-main" id="main-epori">ファイルをドロップ</p>
@@ -175,9 +175,9 @@ canvas { display: block; }
     <!-- Summary bar -->
     <div id="summary-bar" class="summary-bar hidden">
       <div class="summary-items">
-        <div id="summary-ep" class="summary-item hidden"><span class="summary-dot" style="background:#3b82f6"></span><span class="summary-label">EP</span><span class="summary-value" id="summary-ep-val"></span></div>
-        <div id="summary-ev" class="summary-item hidden"><span class="summary-dot" style="background:#10b981"></span><span class="summary-label">EV</span><span class="summary-value" id="summary-ev-val"></span></div>
-        <div id="summary-epori" class="summary-item hidden"><span class="summary-dot" style="background:#f59e0b"></span><span class="summary-label">epori</span><span class="summary-value" id="summary-epori-val"></span></div>
+        <div id="summary-ep" class="summary-item hidden"><span class="summary-dot" style="background:#3b82f6"></span><span class="summary-label">data1</span><span class="summary-value" id="summary-ep-val"></span></div>
+        <div id="summary-ev" class="summary-item hidden"><span class="summary-dot" style="background:#10b981"></span><span class="summary-label">data2</span><span class="summary-value" id="summary-ev-val"></span></div>
+        <div id="summary-epori" class="summary-item hidden"><span class="summary-dot" style="background:#f59e0b"></span><span class="summary-label">data3</span><span class="summary-value" id="summary-epori-val"></span></div>
       </div>
       <button class="reset-btn" onclick="resetAll()">リセット</button>
     </div>
@@ -237,7 +237,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 var parsedData = { ep: null, ev: null, epori: null };
 var state = { ep: 'idle', ev: 'idle', epori: 'idle' };
 var COLORS = { ep: '#3b82f6', ev: '#10b981', epori: '#f59e0b' };
-var LABELS = { ep: 'EP', ev: 'EV', epori: 'epori' };
+var LABELS = { ep: 'data1', ev: 'data2', epori: 'data3' };
 var detailPage = 0;
 var DETAIL_PAGE_SIZE = 100;
 var mergedTs = [];
