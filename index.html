@@ -281,22 +281,41 @@ function parseEpori(rows) {
   for (var c = timeColStart; c < headerRow.length; c++) {
     var label = headerRow[c];
     if (label == null) break;
-    timeLabels.push({ col: c, label: String(label) });
+    var hh, mm;
+    if (typeof label === 'number') {
+      // Excel時間値 (0=0:00, 0.020833=0:30, ...) → HH:MM
+      var totalMin = Math.round(label * 24 * 60);
+      hh = ('0' + Math.floor(totalMin / 60)).slice(-2);
+      mm = ('0' + (totalMin % 60)).slice(-2);
+    } else {
+      // 文字列 "0:00", "0:30", ...
+      var parts = String(label).split(':');
+      hh = ('0' + parseInt(parts[0], 10)).slice(-2);
+      mm = parts[1] || '00';
+    }
+    timeLabels.push({ col: c, hh: hh, mm: mm });
   }
   for (var i = 1; i < rows.length; i++) {
     var row = rows[i];
     var dateRaw = row[2];
     if (dateRaw == null) continue;
-    var dateStr = String(dateRaw).replace(/[^0-9]/g, '');
-    if (dateStr.length !== 8) continue;
-    var df = dateStr.slice(0,4) + '-' + dateStr.slice(4,6) + '-' + dateStr.slice(6,8);
+    var df;
+    if (dateRaw instanceof Date) {
+      // Excelが日付型で保存していた場合
+      var y = dateRaw.getFullYear();
+      var mo = ('0' + (dateRaw.getMonth() + 1)).slice(-2);
+      var d  = ('0' + dateRaw.getDate()).slice(-2);
+      df = y + '-' + mo + '-' + d;
+    } else {
+      // YYYYMMDD の整数 or 文字列
+      var dateStr = String(dateRaw).replace(/[^0-9]/g, '');
+      if (dateStr.length !== 8) continue;
+      df = dateStr.slice(0,4) + '-' + dateStr.slice(4,6) + '-' + dateStr.slice(6,8);
+    }
     for (var t = 0; t < timeLabels.length; t++) {
       var val = row[timeLabels[t].col];
       if (val == null || typeof val !== 'number') continue;
-      var parts = timeLabels[t].label.split(':');
-      var hh = ('0' + parseInt(parts[0], 10)).slice(-2);
-      var mm = parts[1] || '00';
-      result.push({ timestamp: df + 'T' + hh + ':' + mm + ':00', value: val });
+      result.push({ timestamp: df + 'T' + timeLabels[t].hh + ':' + timeLabels[t].mm + ':00', value: val });
     }
   }
   return result;
