@@ -576,15 +576,18 @@ function renderChart() {
   var sortedTs = Object.keys(allTs).sort();
   if (!sortedTs.length) return;
 
-  var t0 = new Date(sortedTs[0]).getTime();
-  var t1 = new Date(sortedTs[sortedTs.length - 1]).getTime();
+  var t0 = new Date(sortedTs[0].replace(/-/g, '/').replace('T', ' ')).getTime();
+  var t1 = new Date(sortedTs[sortedTs.length - 1].replace(/-/g, '/').replace('T', ' ')).getTime();
   var tRange = t1 - t0 || 1;
   var minV = Math.min.apply(null, allVals);
   var maxV = Math.max.apply(null, allVals);
   var vPad = (maxV - minV) * 0.06 || 1;
   minV -= vPad; maxV += vPad;
 
-  function tsToX(ts) { return ml + (new Date(ts).getTime() - t0) / tRange * cw; }
+  // iOS Safari は "YYYY-MM-DDTHH:MM:SS"（タイムゾーンなし）をNaNにする
+  // "YYYY/MM/DD HH:MM:SS" 形式なら全ブラウザで安全
+  function tsToMs(ts) { return new Date(ts.replace(/-/g, '/').replace('T', ' ')).getTime(); }
+  function tsToX(ts) { return ml + (tsToMs(ts) - t0) / tRange * cw; }
   function valToY(v)  { return mt + ch - (v - minV) / (maxV - minV) * ch; }
 
   // 背景
@@ -620,7 +623,7 @@ function renderChart() {
   // データライン（データはすでにソート済み）
   loaded.forEach(function(key) {
     var data = parsedData[key];
-    ctx.strokeStyle = COLORS[key]; ctx.lineWidth = 2;
+    ctx.strokeStyle = COLORS[key]; ctx.lineWidth = 2.5;
     ctx.lineJoin = 'round'; ctx.lineCap = 'round';
     ctx.beginPath();
     var started = false;
@@ -636,7 +639,7 @@ function renderChart() {
   var lx = ml + 14, ly = mt + 14;
   loaded.forEach(function(key, i) {
     var by = ly + i * 22;
-    ctx.strokeStyle = COLORS[key]; ctx.lineWidth = 2;
+    ctx.strokeStyle = COLORS[key]; ctx.lineWidth = 2.5;
     ctx.beginPath(); ctx.moveTo(lx, by); ctx.lineTo(lx + 22, by); ctx.stroke();
     ctx.fillStyle = COLORS[key];
     ctx.beginPath(); ctx.arc(lx + 11, by, 3.5, 0, Math.PI * 2); ctx.fill();
