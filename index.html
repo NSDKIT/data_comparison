@@ -197,12 +197,10 @@ canvas { display: block; }
       <div class="step-label" style="padding:16px 24px 0;"><span class="step-badge">Step 2</span>分析結果</div>
       <div class="tabs">
         <button id="tab-btn-summary" class="tab-btn active" onclick="switchTab('summary')">&#128202; データ管理</button>
-        <button id="tab-btn-detail"  class="tab-btn"        onclick="switchTab('detail')">&#128203; データ詳細</button>
         <button id="tab-btn-chart"   class="tab-btn"        onclick="switchTab('chart')">&#128200; グラフ</button>
       </div>
       <div class="tab-content">
         <div id="tab-summary"></div>
-        <div id="tab-detail" class="hidden"></div>
         <div id="tab-chart" class="hidden">
           <div id="chart-container" class="chart-container">
             <canvas id="chart-canvas"></canvas>
@@ -343,6 +341,7 @@ function handleFile(key, file) {
         data = parseEpEv(hasHeader ? rowsRaw.slice(1) : rowsRaw);
         info = data.length.toLocaleString() + ' レコード';
       }
+      data.sort(function(a, b) { return a.timestamp < b.timestamp ? -1 : 1; });
       parsedData[key] = data;
       setStatus(key, 'success', file.name, info, null);
     } catch(err) {
@@ -450,13 +449,12 @@ function startAnalysis() {
 }
 
 function switchTab(name) {
-  ['summary','detail','chart'].forEach(function(t) {
+  ['summary','chart'].forEach(function(t) {
     document.getElementById('tab-btn-' + t).classList[t === name ? 'add' : 'remove']('active');
     document.getElementById('tab-' + t).classList[t === name ? 'remove' : 'add']('hidden');
   });
   if (name === 'summary') renderSummary();
-  else if (name === 'detail') { detailPage = 0; buildMergedData(); renderDetail(); }
-  else if (name === 'chart') renderChart();
+  else if (name === 'chart') setTimeout(renderChart, 30);
 }
 
 // ===== 機能1: データ管理 =====
@@ -559,120 +557,93 @@ function changePage(delta) {
 function renderChart() {
   var container = document.getElementById('chart-container');
   var canvas = document.getElementById('chart-canvas');
-  var loaded = ['ep','ev','epori'].filter(function(k){ return parsedData[k]; });
+  var loaded = ['ep','ev','epori'].filter(function(k){ return parsedData[k] && parsedData[k].length > 0; });
   if (!loaded.length) return;
 
-  var W = container.clientWidth || 800;
+  var W = container.offsetWidth || container.clientWidth || 800;
+  if (W < 100) { setTimeout(renderChart, 100); return; }
   var H = 420;
-  canvas.width = W;
-  canvas.height = H;
+  canvas.width = W; canvas.height = H;
   var ctx = canvas.getContext('2d');
+  var mt = 30, mr = 40, mb = 70, ml = 80;
+  var cw = W - ml - mr, ch = H - mt - mb;
 
-  var mt = 30, mr = 30, mb = 70, ml = 80;
-  var cw = W - ml - mr;
-  var ch = H - mt - mb;
-
-  // 全データからmin/max
-  var allTs = [], allVals = [];
+  // 全データ収集（すでにソート済み）
+  var allTs = {}, allVals = [];
   loaded.forEach(function(k) {
-    parsedData[k].forEach(function(d) {
-      allTs.push(d.timestamp);
-      allVals.push(d.value);
-    });
+    parsedData[k].forEach(function(d) { allTs[d.timestamp] = true; allVals.push(d.value); });
   });
-  var tsSet = {};
-  allTs.forEach(function(t){ tsSet[t] = true; });
-  var sortedTs = Object.keys(tsSet).sort();
+  var sortedTs = Object.keys(allTs).sort();
+  if (!sortedTs.length) return;
 
   var t0 = new Date(sortedTs[0]).getTime();
-  var t1 = new Date(sortedTs[sortedTs.length-1]).getTime();
+  var t1 = new Date(sortedTs[sortedTs.length - 1]).getTime();
+  var tRange = t1 - t0 || 1;
   var minV = Math.min.apply(null, allVals);
   var maxV = Math.max.apply(null, allVals);
-  var vRange = maxV - minV || 1;
-  var vPad = vRange * 0.05;
+  var vPad = (maxV - minV) * 0.06 || 1;
   minV -= vPad; maxV += vPad;
 
-  function tsToX(ts) { return ml + (new Date(ts).getTime() - t0) / (t1 - t0 || 1) * cw; }
-  function valToY(v) { return mt + ch - (v - minV) / (maxV - minV) * ch; }
-
-  ctx.clearRect(0, 0, W, H);
+  function tsToX(ts) { return ml + (new Date(ts).getTime() - t0) / tRange * cw; }
+  function valToY(v)  { return mt + ch - (v - minV) / (maxV - minV) * ch; }
 
   // 背景
-  ctx.fillStyle = '#fff';
-  ctx.fillRect(0, 0, W, H);
+  ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, W, H);
 
-  // Y グリッド & ラベル
+  // Y グリッド＆ラベル
   var yTicks = 5;
   for (var i = 0; i <= yTicks; i++) {
     var v = minV + (maxV - minV) * i / yTicks;
     var y = valToY(v);
-    ctx.strokeStyle = '#e2e8f0';
-    ctx.lineWidth = 1;
+    ctx.strokeStyle = '#e2e8f0'; ctx.lineWidth = 1;
     ctx.beginPath(); ctx.moveTo(ml, y); ctx.lineTo(ml + cw, y); ctx.stroke();
-    ctx.fillStyle = '#64748b';
-    ctx.font = '11px sans-serif';
-    ctx.textAlign = 'right';
-    var label = Math.abs(v) >= 1000 ? (v/1000).toFixed(1)+'k' : v.toFixed(1);
-    ctx.fillText(label, ml - 8, y + 4);
+    ctx.fillStyle = '#64748b'; ctx.font = '11px sans-serif'; ctx.textAlign = 'right';
+    var vLabel = Math.abs(v) >= 1000 ? (v / 1000).toFixed(1) + 'k' : v.toFixed(1);
+    ctx.fillText(vLabel, ml - 8, y + 4);
   }
 
-  // X ラベル
-  var xLabelCount = Math.min(8, sortedTs.length);
-  var step = Math.max(1, Math.floor(sortedTs.length / xLabelCount));
-  ctx.fillStyle = '#64748b';
-  ctx.font = '11px sans-serif';
-  ctx.textAlign = 'center';
+  // X ラベル（日付 MM/DD）
+  var xTicks = Math.min(8, sortedTs.length);
+  var step = Math.max(1, Math.floor(sortedTs.length / xTicks));
+  ctx.fillStyle = '#64748b'; ctx.font = '11px sans-serif'; ctx.textAlign = 'center';
   for (var j = 0; j < sortedTs.length; j += step) {
     var x = tsToX(sortedTs[j]);
-    var dateLabel = sortedTs[j].slice(5, 10).replace('-', '/'); // MM/DD
-    ctx.fillText(dateLabel, x, H - mb + 18);
-    ctx.strokeStyle = '#f1f5f9';
-    ctx.lineWidth = 1;
+    ctx.fillText(sortedTs[j].slice(5, 10).replace('-', '/'), x, H - mb + 18);
+    ctx.strokeStyle = '#f1f5f9'; ctx.lineWidth = 1;
     ctx.beginPath(); ctx.moveTo(x, mt); ctx.lineTo(x, mt + ch); ctx.stroke();
   }
 
   // 軸
-  ctx.strokeStyle = '#94a3b8';
-  ctx.lineWidth = 1.5;
-  ctx.beginPath();
-  ctx.moveTo(ml, mt); ctx.lineTo(ml, mt + ch); ctx.lineTo(ml + cw, mt + ch);
-  ctx.stroke();
+  ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(ml, mt); ctx.lineTo(ml, mt + ch); ctx.lineTo(ml + cw, mt + ch); ctx.stroke();
 
-  // データライン
+  // データライン（データはすでにソート済み）
   loaded.forEach(function(key) {
-    var data = parsedData[key].slice().sort(function(a,b){ return a.timestamp < b.timestamp ? -1 : 1; });
-    ctx.strokeStyle = COLORS[key];
-    ctx.lineWidth = 1.8;
-    ctx.lineJoin = 'round';
+    var data = parsedData[key];
+    ctx.strokeStyle = COLORS[key]; ctx.lineWidth = 2;
+    ctx.lineJoin = 'round'; ctx.lineCap = 'round';
     ctx.beginPath();
     var started = false;
-    data.forEach(function(d) {
-      var x = tsToX(d.timestamp);
-      var y = valToY(d.value);
-      if (!started) { ctx.moveTo(x, y); started = true; }
-      else ctx.lineTo(x, y);
-    });
+    for (var di = 0; di < data.length; di++) {
+      var x = tsToX(data[di].timestamp);
+      var y = valToY(data[di].value);
+      if (!started) { ctx.moveTo(x, y); started = true; } else ctx.lineTo(x, y);
+    }
     ctx.stroke();
   });
 
   // 凡例
-  var lx = ml + 12, ly = mt + 12;
+  var lx = ml + 14, ly = mt + 14;
   loaded.forEach(function(key, i) {
-    var bx = lx, by = ly + i * 22;
+    var by = ly + i * 22;
+    ctx.strokeStyle = COLORS[key]; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(lx, by); ctx.lineTo(lx + 22, by); ctx.stroke();
     ctx.fillStyle = COLORS[key];
-    ctx.fillRect(bx, by - 2, 22, 3);
-    // 丸
-    ctx.beginPath();
-    ctx.arc(bx + 11, by - 0.5, 4, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.fillStyle = '#334155';
-    ctx.font = 'bold 12px sans-serif';
-    ctx.textAlign = 'left';
-    ctx.fillText(LABELS[key], bx + 30, by + 4);
-    // データ件数
-    ctx.fillStyle = '#94a3b8';
-    ctx.font = '11px sans-serif';
-    ctx.fillText(parsedData[key].length.toLocaleString() + '件', bx + 72, by + 4);
+    ctx.beginPath(); ctx.arc(lx + 11, by, 3.5, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#334155'; ctx.font = 'bold 12px sans-serif'; ctx.textAlign = 'left';
+    ctx.fillText(LABELS[key], lx + 30, by + 4);
+    ctx.fillStyle = '#94a3b8'; ctx.font = '11px sans-serif';
+    ctx.fillText(parsedData[key].length.toLocaleString() + '件', lx + 80, by + 4);
   });
 }
 
