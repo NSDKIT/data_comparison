@@ -6,82 +6,111 @@
 <title>データ比較ツール</title>
 <style>
 *, *::before, *::after { box-sizing: border-box; }
-body { margin: 0; font-family: 'Segoe UI', sans-serif; background: #f8fafc; min-height: 100vh; }
+body { margin: 0; font-family: 'Segoe UI', sans-serif; background: #f8fafc; }
 .app { min-height: 100vh; display: flex; flex-direction: column; }
 
-.header { background: #fff; border-bottom: 1px solid #e2e8f0; padding: 20px 24px; }
+/* Header */
+.header { background: #fff; border-bottom: 1px solid #e2e8f0; padding: 18px 24px; }
 .header-inner { max-width: 1100px; margin: 0 auto; display: flex; align-items: center; gap: 14px; }
-.header-logo { width: 40px; height: 40px; background: linear-gradient(135deg, #3b82f6, #6366f1); border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.header-logo svg { width: 22px; height: 22px; color: #fff; }
-.header-title { font-size: 20px; font-weight: 700; color: #0f172a; margin: 0; letter-spacing: -0.3px; }
-.header-subtitle { font-size: 13px; color: #64748b; margin: 2px 0 0; }
+.header-logo { width: 38px; height: 38px; background: linear-gradient(135deg,#3b82f6,#6366f1); border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.header-logo svg { width: 20px; height: 20px; color: #fff; }
+.header-title { font-size: 19px; font-weight: 700; color: #0f172a; margin: 0; }
+.header-subtitle { font-size: 12px; color: #64748b; margin: 2px 0 0; }
 
-.main { max-width: 1100px; margin: 0 auto; padding: 40px 24px 80px; width: 100%; display: flex; flex-direction: column; align-items: center; gap: 24px; }
+/* Main */
+.main { max-width: 1100px; margin: 0 auto; padding: 36px 24px 80px; width: 100%; display: flex; flex-direction: column; gap: 22px; }
 
-.step-label { display: flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 600; color: #334155; align-self: flex-start; }
-.step-badge { background: #eff6ff; color: #3b82f6; font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 20px; letter-spacing: 0.5px; text-transform: uppercase; }
+/* Step label */
+.step-label { display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 600; color: #334155; }
+.step-badge { background: #eff6ff; color: #3b82f6; font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 20px; letter-spacing: 0.5px; text-transform: uppercase; }
 
+/* Drop zone grid */
 .dropzone-grid { display: grid; grid-template-columns: 1fr auto 1fr auto 1fr; width: 100%; align-items: stretch; }
-
-.dropzone { background: #fff; border: 2px dashed #cbd5e1; border-radius: 16px; padding: 36px 20px; cursor: pointer; transition: border-color .2s, background .2s, box-shadow .2s; user-select: none; outline: none; min-height: 240px; display: flex; align-items: center; justify-content: center; }
+.dropzone { background: #fff; border: 2px dashed #cbd5e1; border-radius: 14px; padding: 32px 18px; cursor: pointer; transition: border-color .2s, background .2s, box-shadow .2s; user-select: none; outline: none; min-height: 220px; display: flex; align-items: center; justify-content: center; }
 .dropzone:hover, .dropzone:focus-visible { border-color: #94a3b8; background: #f8fafc; }
-.dropzone.dragging { border-color: #3b82f6; background: #eff6ff; box-shadow: 0 0 0 4px rgba(59,130,246,.12); }
+.dropzone.dragging { border-color: #3b82f6; background: #eff6ff; box-shadow: 0 0 0 4px rgba(59,130,246,.1); }
 .dropzone.success { border-color: #86efac; background: #f0fdf4; }
-.dropzone.error { border-color: #fca5a5; background: #fff5f5; }
-
-.dropzone-inner { display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; }
-.file-tag { font-size: 11px; font-weight: 700; letter-spacing: .8px; text-transform: uppercase; padding: 3px 10px; border-radius: 20px; margin-bottom: 4px; }
+.dropzone.error   { border-color: #fca5a5; background: #fff5f5; }
+.dropzone-inner { display: flex; flex-direction: column; align-items: center; gap: 7px; text-align: center; }
+.file-tag { font-size: 11px; font-weight: 700; letter-spacing: .8px; text-transform: uppercase; padding: 3px 10px; border-radius: 20px; }
 .tag-ep    { background: #dbeafe; color: #1d4ed8; }
 .tag-ev    { background: #d1fae5; color: #065f46; }
 .tag-epori { background: #fef3c7; color: #92400e; }
-
-.format-badge { font-size: 10px; color: #94a3b8; background: #f1f5f9; border-radius: 4px; padding: 2px 6px; margin-top: -4px; }
-
-.dropzone-icon { width: 52px; height: 52px; display: flex; align-items: center; justify-content: center; margin: 2px 0; }
-.upload-icon { width: 38px; height: 38px; color: #94a3b8; transition: color .2s; }
-.dropzone:hover .upload-icon, .dropzone:focus-visible .upload-icon, .dropzone.dragging .upload-icon { color: #3b82f6; }
-
-.icon-success, .icon-error { width: 44px; height: 44px; border-radius: 50%; font-size: 22px; font-weight: 700; display: flex; align-items: center; justify-content: center; color: #fff; }
-.icon-success { background: #22c55e; }
-.icon-error { background: #ef4444; }
-
-.spinner { width: 34px; height: 34px; border: 3px solid #e2e8f0; border-top-color: #3b82f6; border-radius: 50%; animation: spin .7s linear infinite; display: inline-block; }
+.format-badge { font-size: 10px; color: #94a3b8; background: #f1f5f9; border-radius: 4px; padding: 2px 6px; }
+.dropzone-icon { width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; margin: 2px 0; }
+.upload-icon { width: 36px; height: 36px; color: #94a3b8; transition: color .2s; }
+.dropzone:hover .upload-icon, .dropzone.dragging .upload-icon { color: #3b82f6; }
+.icon-success, .icon-error { width: 42px; height: 42px; border-radius: 50%; font-size: 20px; font-weight: 700; display: flex; align-items: center; justify-content: center; color: #fff; }
+.icon-success { background: #22c55e; } .icon-error { background: #ef4444; }
+.spinner { width: 32px; height: 32px; border: 3px solid #e2e8f0; border-top-color: #3b82f6; border-radius: 50%; animation: spin .7s linear infinite; display: inline-block; }
 @keyframes spin { to { transform: rotate(360deg); } }
+.dropzone-main { font-size: 13px; font-weight: 600; color: #334155; margin: 0; max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dropzone-sub  { font-size: 12px; color: #64748b; margin: 0; }
+.dropzone-hint { font-size: 11px; color: #94a3b8; margin: 3px 0 0; }
+.replace-hint  { color: #93c5fd; }
+.success-text  { color: #15803d; }
+.error-text    { color: #b91c1c; }
 
-.dropzone-main { font-size: 14px; font-weight: 600; color: #334155; margin: 0; max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.dropzone-sub { font-size: 12px; color: #64748b; margin: 0; }
-.dropzone-hint { font-size: 11px; color: #94a3b8; margin: 4px 0 0; }
-.replace-hint { color: #93c5fd; }
-.success-text { color: #15803d; }
-.error-text { color: #b91c1c; }
+/* Divider */
+.divider-col { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0 10px; gap: 6px; }
+.divider-line { flex: 1; width: 1px; background: #e2e8f0; max-height: 60px; }
+.divider-vs { font-size: 11px; font-weight: 700; color: #94a3b8; letter-spacing: 1px; background: #f1f5f9; padding: 4px 8px; border-radius: 20px; }
 
-.divider-col { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0 12px; gap: 8px; }
-.divider-line { flex: 1; width: 1px; background: #e2e8f0; max-height: 70px; }
-.divider-vs { font-size: 12px; font-weight: 700; color: #94a3b8; letter-spacing: 1px; background: #f1f5f9; padding: 5px 9px; border-radius: 20px; }
-
-.summary-bar { width: 100%; background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px 18px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
-.summary-items { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 0; }
+/* Summary bar */
+.summary-bar { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.summary-items { display: flex; flex-direction: column; gap: 5px; flex: 1; min-width: 0; }
 .summary-item { display: flex; align-items: center; gap: 8px; }
-.summary-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-.summary-label { font-size: 12px; font-weight: 700; color: #475569; width: 52px; flex-shrink: 0; }
-.summary-value { font-size: 13px; color: #475569; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.summary-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.summary-label { font-size: 11px; font-weight: 700; color: #475569; width: 48px; flex-shrink: 0; }
+.summary-value { font-size: 12px; color: #475569; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.reset-btn { padding: 7px 14px; border-radius: 8px; border: 1px solid #e2e8f0; background: #fff; color: #64748b; font-size: 12px; font-weight: 500; cursor: pointer; transition: all .15s; flex-shrink: 0; }
+.reset-btn:hover { border-color: #94a3b8; color: #334155; }
 
-.reset-btn { padding: 8px 16px; border-radius: 8px; border: 1px solid #e2e8f0; background: #fff; color: #64748b; font-size: 13px; font-weight: 500; cursor: pointer; transition: all .15s; flex-shrink: 0; }
-.reset-btn:hover { border-color: #94a3b8; color: #334155; background: #f8fafc; }
+/* Analyze button */
+.analyze-btn { display: flex; align-items: center; gap: 8px; padding: 13px 30px; border-radius: 12px; border: none; background: #e2e8f0; color: #94a3b8; font-size: 14px; font-weight: 600; cursor: not-allowed; transition: all .2s; align-self: center; }
+.analyze-btn svg { width: 18px; height: 18px; }
+.analyze-btn.active { background: linear-gradient(135deg,#3b82f6,#6366f1); color: #fff; cursor: pointer; box-shadow: 0 4px 14px rgba(99,102,241,.3); }
+.analyze-btn.active:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(99,102,241,.4); }
+.analyze-hint { font-size: 12px; color: #94a3b8; text-align: center; }
 
-.analyze-btn { display: flex; align-items: center; gap: 8px; padding: 14px 32px; border-radius: 12px; border: none; background: #e2e8f0; color: #94a3b8; font-size: 15px; font-weight: 600; cursor: not-allowed; transition: all .2s; letter-spacing: -.2px; }
-.analyze-btn svg { width: 20px; height: 20px; }
-.analyze-btn.active { background: linear-gradient(135deg, #3b82f6, #6366f1); color: #fff; cursor: pointer; box-shadow: 0 4px 14px rgba(99,102,241,.35); }
-.analyze-btn.active:hover { box-shadow: 0 6px 20px rgba(99,102,241,.45); transform: translateY(-1px); }
-.analyze-btn.active:active { transform: translateY(0); }
-.analyze-hint { font-size: 13px; color: #94a3b8; margin: -12px 0 0; }
+/* Analysis section */
+.analysis-section { background: #fff; border: 1px solid #e2e8f0; border-radius: 16px; overflow: hidden; }
+.tabs { display: flex; border-bottom: 1px solid #e2e8f0; background: #f8fafc; }
+.tab-btn { flex: 1; padding: 13px 16px; border: none; background: transparent; color: #64748b; font-size: 13px; font-weight: 600; cursor: pointer; transition: all .15s; border-bottom: 2px solid transparent; }
+.tab-btn:hover { color: #334155; background: #f1f5f9; }
+.tab-btn.active { color: #3b82f6; border-bottom-color: #3b82f6; background: #fff; }
+.tab-content { padding: 24px; }
+
+/* Tables */
+.table-scroll { overflow-x: auto; }
+.data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.data-table th { background: #f8fafc; color: #475569; font-weight: 600; padding: 10px 14px; text-align: left; border-bottom: 2px solid #e2e8f0; white-space: nowrap; }
+.data-table td { padding: 8px 14px; border-bottom: 1px solid #f1f5f9; color: #334155; }
+.data-table tbody tr:hover { background: #f8fafc; }
+.cell-mono { font-family: monospace; font-size: 12px; color: #475569; }
+.cell-num  { text-align: right; font-family: monospace; font-size: 12px; }
+.cell-empty { background: #fafafa; }
+.cell-warn { color: #dc2626; font-weight: 600; text-align: right; font-family: monospace; font-size: 12px; }
+.file-badge { display: inline-block; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 12px; }
+.table-info { font-size: 12px; color: #64748b; margin-bottom: 12px; }
+
+/* Pagination */
+.pagination { display: flex; align-items: center; justify-content: center; gap: 16px; margin-top: 16px; }
+.page-btn { padding: 7px 16px; border-radius: 8px; border: 1px solid #e2e8f0; background: #fff; color: #334155; font-size: 13px; cursor: pointer; transition: all .15s; }
+.page-btn:hover:not([disabled]) { border-color: #3b82f6; color: #3b82f6; }
+.page-btn[disabled] { opacity: 0.4; cursor: not-allowed; }
+.page-info { font-size: 13px; color: #64748b; }
+
+/* Chart */
+.chart-container { width: 100%; }
+canvas { display: block; }
+
 .hidden { display: none !important; }
-
 @media (max-width: 768px) {
   .dropzone-grid { grid-template-columns: 1fr; }
-  .divider-col { flex-direction: row; padding: 8px 0; }
-  .divider-line { flex: 1; width: auto; height: 1px; max-height: none; }
-  .dropzone { min-height: 160px; }
+  .divider-col { flex-direction: row; padding: 6px 0; }
+  .divider-line { flex:1; width:auto; height:1px; max-height:none; }
+  .dropzone { min-height: 150px; }
 }
 </style>
 </head>
@@ -96,110 +125,89 @@ body { margin: 0; font-family: 'Segoe UI', sans-serif; background: #f8fafc; min-
       </div>
       <div>
         <h1 class="header-title">データ比較ツール</h1>
-        <p class="header-subtitle">EP・EV・epori データを取り込んで比較分析</p>
+        <p class="header-subtitle">EP / EV / epori データを取り込んで比較分析</p>
       </div>
     </div>
   </header>
-  <main class="main">
-    <div class="step-label">
-      <span class="step-badge">Step 1</span>
-      比較するファイルをインポート（2つ以上）
-    </div>
-    <div class="dropzone-grid">
 
-      <!-- EP -->
+  <main class="main">
+    <!-- Step 1: Import -->
+    <div class="step-label"><span class="step-badge">Step 1</span>比較するファイルをインポート（2つ以上）</div>
+
+    <div class="dropzone-grid">
       <div id="dz-ep" class="dropzone" tabindex="0" role="button">
         <input id="input-ep" type="file" accept=".xlsx,.xls" class="hidden">
         <div class="dropzone-inner">
           <div class="file-tag tag-ep">EP データ</div>
           <div class="format-badge">.xlsx / .xls</div>
-          <div class="dropzone-icon" id="icon-ep">
-            <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/>
-            </svg>
-          </div>
+          <div class="dropzone-icon" id="icon-ep"><svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/></svg></div>
           <p class="dropzone-main" id="main-ep">ファイルをドロップ</p>
           <p class="dropzone-sub" id="sub-ep">または クリックして選択</p>
           <p class="dropzone-hint" id="hint-ep">.xlsx / .xls</p>
         </div>
       </div>
-
-      <div class="divider-col">
-        <div class="divider-line"></div>
-        <span class="divider-vs">VS</span>
-        <div class="divider-line"></div>
-      </div>
-
-      <!-- EV -->
+      <div class="divider-col"><div class="divider-line"></div><span class="divider-vs">VS</span><div class="divider-line"></div></div>
       <div id="dz-ev" class="dropzone" tabindex="0" role="button">
         <input id="input-ev" type="file" accept=".xlsx,.xls" class="hidden">
         <div class="dropzone-inner">
           <div class="file-tag tag-ev">EV データ</div>
           <div class="format-badge">.xlsx / .xls</div>
-          <div class="dropzone-icon" id="icon-ev">
-            <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/>
-            </svg>
-          </div>
+          <div class="dropzone-icon" id="icon-ev"><svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/></svg></div>
           <p class="dropzone-main" id="main-ev">ファイルをドロップ</p>
           <p class="dropzone-sub" id="sub-ev">または クリックして選択</p>
           <p class="dropzone-hint" id="hint-ev">.xlsx / .xls</p>
         </div>
       </div>
-
-      <div class="divider-col">
-        <div class="divider-line"></div>
-        <span class="divider-vs">VS</span>
-        <div class="divider-line"></div>
-      </div>
-
-      <!-- epori -->
+      <div class="divider-col"><div class="divider-line"></div><span class="divider-vs">VS</span><div class="divider-line"></div></div>
       <div id="dz-epori" class="dropzone" tabindex="0" role="button">
         <input id="input-epori" type="file" accept=".csv,.xlsx,.xls" class="hidden">
         <div class="dropzone-inner">
           <div class="file-tag tag-epori">epori データ</div>
           <div class="format-badge">.csv / .xlsx</div>
-          <div class="dropzone-icon" id="icon-epori">
-            <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/>
-            </svg>
-          </div>
+          <div class="dropzone-icon" id="icon-epori"><svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/></svg></div>
           <p class="dropzone-main" id="main-epori">ファイルをドロップ</p>
           <p class="dropzone-sub" id="sub-epori">または クリックして選択</p>
           <p class="dropzone-hint" id="hint-epori">.csv / .xlsx</p>
         </div>
       </div>
-
     </div>
 
+    <!-- Summary bar -->
     <div id="summary-bar" class="summary-bar hidden">
       <div class="summary-items">
-        <div id="summary-ep" class="summary-item hidden">
-          <span class="summary-dot" style="background:#3b82f6"></span>
-          <span class="summary-label">EP</span>
-          <span class="summary-value" id="summary-ep-val"></span>
-        </div>
-        <div id="summary-ev" class="summary-item hidden">
-          <span class="summary-dot" style="background:#10b981"></span>
-          <span class="summary-label">EV</span>
-          <span class="summary-value" id="summary-ev-val"></span>
-        </div>
-        <div id="summary-epori" class="summary-item hidden">
-          <span class="summary-dot" style="background:#f59e0b"></span>
-          <span class="summary-label">epori</span>
-          <span class="summary-value" id="summary-epori-val"></span>
-        </div>
+        <div id="summary-ep" class="summary-item hidden"><span class="summary-dot" style="background:#3b82f6"></span><span class="summary-label">EP</span><span class="summary-value" id="summary-ep-val"></span></div>
+        <div id="summary-ev" class="summary-item hidden"><span class="summary-dot" style="background:#10b981"></span><span class="summary-label">EV</span><span class="summary-value" id="summary-ev-val"></span></div>
+        <div id="summary-epori" class="summary-item hidden"><span class="summary-dot" style="background:#f59e0b"></span><span class="summary-label">epori</span><span class="summary-value" id="summary-epori-val"></span></div>
       </div>
       <button class="reset-btn" onclick="resetAll()">リセット</button>
     </div>
 
-    <button id="analyze-btn" class="analyze-btn" disabled>
+    <button id="analyze-btn" class="analyze-btn" disabled onclick="startAnalysis()">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0118 16.5h-2.25m-7.5 0h7.5m-7.5 0l-1 3m8.5-3l1 3m0 0l.5 1.5m-.5-1.5h-9.5m0 0l-.5 1.5"/>
       </svg>
       比較分析を開始
     </button>
     <p id="analyze-hint" class="analyze-hint">比較するファイルを2つ以上インポートしてください</p>
+
+    <!-- Step 2: Analysis -->
+    <div id="analysis-section" class="analysis-section hidden">
+      <div class="step-label" style="padding:16px 24px 0;"><span class="step-badge">Step 2</span>分析結果</div>
+      <div class="tabs">
+        <button id="tab-btn-summary" class="tab-btn active" onclick="switchTab('summary')">&#128202; データ管理</button>
+        <button id="tab-btn-detail"  class="tab-btn"        onclick="switchTab('detail')">&#128203; データ詳細</button>
+        <button id="tab-btn-chart"   class="tab-btn"        onclick="switchTab('chart')">&#128200; グラフ</button>
+      </div>
+      <div class="tab-content">
+        <div id="tab-summary"></div>
+        <div id="tab-detail" class="hidden"></div>
+        <div id="tab-chart" class="hidden">
+          <div id="chart-container" class="chart-container">
+            <canvas id="chart-canvas"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
   </main>
 </div>
 <script>/*! xlsx.js (C) 2013-present SheetJS -- http://sheetjs.com */
@@ -225,28 +233,30 @@ var o=Math.min(a.sheetRows||1e7,f.length);var l={s:{r:0,c:0},e:{r:n,c:i}};if(e["
 var o=((a=s[17])==null?void 0:a[0])?Ob(e,e[_b(s[17][0].data)][0]):[];var l=vb(s[3][0].data);var c=0;l[1].forEach(function(r){var a=vb(r.data);var n=e[_b(a[2][0].data)][0];var i=db(n.meta[1][0].data);if(i!=6002)throw new Error("6001 unexpected reference to ".concat(i));var s=Ib(e,n);s.data.forEach(function(e,r){e.forEach(function(e,a){var n=Ra({r:c+r,c:a});var i=Sb(e,f,o);if(i)t[n]=i})});c+=s.nrows})}function Db(e,r){var t=vb(r.data);var a={"!ref":"A1"};var n=e[_b(t[2][0].data)];var i=db(n[0].meta[1][0].data);if(i!=6001)throw new Error("6000 unexpected reference to ".concat(i));Nb(e,n[0],a);return a}function Fb(e,r){var t;var a=vb(r.data);var n={name:((t=a[1])==null?void 0:t[0])?nb(a[1][0].data):"",sheets:[]};var i=gb(a[2],_b);i.forEach(function(r){e[r].forEach(function(r){var t=db(r.meta[1][0].data);if(t==6e3)n.sheets.push(Db(e,r))})});return n}function Pb(e,r){var t=Nw();var a=vb(r.data);var n=gb(a[1],_b);n.forEach(function(r){e[r].forEach(function(r){var a=db(r.meta[1][0].data);if(a==2){var n=Fb(e,r);n.sheets.forEach(function(e,r){Dw(t,e,r==0?n.name:n.name+"_"+r,true)})}})});if(t.SheetNames.length==0)throw new Error("Empty NUMBERS file");return t}function Lb(e){var r,t,a,n;var i={},s=[];e.FullPaths.forEach(function(e){if(e.match(/\.iwpv2/))throw new Error("Unsupported password protection")});e.FileIndex.forEach(function(e){if(!e.name.match(/\.iwa$/))return;var r;try{r=kb(e.content)}catch(t){return console.log("?? "+e.content.length+" "+(t.message||t))}var a;try{a=mb(r)}catch(t){return console.log("## "+(t.message||t))}a.forEach(function(e){i[e.id]=e.messages;s.push(e.id)})});if(!s.length)throw new Error("File has no messages");var f=((n=(a=(t=(r=i==null?void 0:i[1])==null?void 0:r[0])==null?void 0:t.meta)==null?void 0:a[1])==null?void 0:n[0].data)&&db(i[1][0].meta[1][0].data)==1&&i[1][0];if(!f)s.forEach(function(e){i[e].forEach(function(e){var r=db(e.meta[1][0].data)>>>0;if(r==1){if(!f)f=e;else throw new Error("Document has multiple roots")}})});if(!f)throw new Error("Cannot find Document root");return Pb(i,f)}function Mb(e,r,t){var a,n,i,s;if(!((a=e[6])==null?void 0:a[0])||!((n=e[7])==null?void 0:n[0]))throw"Mutation only works on post-BNC storages!";var f=((s=(i=e[8])==null?void 0:i[0])==null?void 0:s.data)&&db(e[8][0].data)>0||false;if(f)throw"Math only works with normal offsets";var o=0;var l=ab(e[7][0].data),c=0,h=[];var u=ab(e[4][0].data),d=0,v=[];for(var p=0;p<r.length;++p){if(r[p]==null){l.setUint16(p*2,65535,true);u.setUint16(p*2,65535);continue}l.setUint16(p*2,c,true);u.setUint16(p*2,d,true);var g,m;switch(typeof r[p]){case"string":g=Cb({t:"s",v:r[p]},t);m=yb({t:"s",v:r[p]},t);break;case"number":g=Cb({t:"n",v:r[p]},t);m=yb({t:"n",v:r[p]},t);break;case"boolean":g=Cb({t:"b",v:r[p]},t);m=yb({t:"b",v:r[p]},t);break;default:throw new Error("Unsupported value "+r[p]);}h.push(g);c+=g.length;v.push(m);d+=m.length;++o}e[2][0].data=ub(o);for(;p<e[7][0].data.length/2;++p){l.setUint16(p*2,65535,true);u.setUint16(p*2,65535,true)}e[6][0].data=fb(h);e[3][0].data=fb(v);return o}function Ub(e,r){if(!r||!r.numbers)throw new Error("Must pass a `numbers` option -- check the README");var t=e.Sheets[e.SheetNames[0]];if(e.SheetNames.length>1)console.error("The Numbers writer currently writes only the first table");var a=Ia(t["!ref"]);a.s.r=a.s.c=0;var n=false;if(a.e.c>9){n=true;a.e.c=9}if(a.e.r>49){n=true;a.e.r=49}if(n)console.error("The Numbers writer is currently limited to ".concat(Na(a)));var i=Aw(t,{range:a,header:1});var s=["~Sh33tJ5~"];i.forEach(function(e){return e.forEach(function(e){if(typeof e=="string")s.push(e)})});var f={};var o=[];var l=Ke.read(r.numbers,{type:"base64"});l.FileIndex.map(function(e,r){return[e,l.FullPaths[r]]}).forEach(function(e){var r=e[0],t=e[1];if(r.type!=2)return;if(!r.name.match(/\.iwa/))return;var a=r.content;var n=kb(a);var i=mb(n);i.forEach(function(e){o.push(e.id);f[e.id]={deps:[],location:t,type:db(e.messages[0].meta[1][0].data)}})});o.sort(function(e,r){return e-r});var c=o.filter(function(e){return e>1}).map(function(e){return[e,ub(e)]});l.FileIndex.map(function(e,r){return[e,l.FullPaths[r]]}).forEach(function(e){var r=e[0],t=e[1];if(!r.name.match(/\.iwa/))return;var a=mb(kb(r.content));a.forEach(function(e){e.messages.forEach(function(r){c.forEach(function(r){if(e.messages.some(function(e){return db(e.meta[1][0].data)!=11006&&sb(e.data,r[1])})){f[r[0]].deps.push(e.id)}})})})});function h(){for(var e=927262;e<2e6;++e)if(!f[e])return e;throw new Error("Too many messages")}var u=Ke.find(l,f[1].location);var d=mb(kb(u.content));var v;for(var p=0;p<d.length;++p){var g=d[p];if(g.id==1)v=g}var m=_b(vb(v.messages[0].data)[1][0].data);u=Ke.find(l,f[m].location);d=mb(kb(u.content));for(p=0;p<d.length;++p){g=d[p];if(g.id==m)v=g}m=_b(vb(v.messages[0].data)[2][0].data);u=Ke.find(l,f[m].location);d=mb(kb(u.content));for(p=0;p<d.length;++p){g=d[p];if(g.id==m)v=g}m=_b(vb(v.messages[0].data)[2][0].data);u=Ke.find(l,f[m].location);d=mb(kb(u.content));for(p=0;p<d.length;++p){g=d[p];if(g.id==m)v=g}var b=vb(v.messages[0].data);{b[6][0].data=ub(a.e.r+1);b[7][0].data=ub(a.e.c+1);var w=_b(b[46][0].data);var k=Ke.find(l,f[w].location);var T=mb(kb(k.content));{for(var A=0;A<T.length;++A){if(T[A].id==w)break}if(T[A].id!=w)throw"Bad ColumnRowUIDMapArchive";var E=vb(T[A].messages[0].data);E[1]=[];E[2]=[],E[3]=[];for(var C=0;C<=a.e.c;++C){var y=[];y[1]=y[2]=[{type:0,data:ub(C+420690)}];E[1].push({type:2,data:pb(y)});E[2].push({type:0,data:ub(C)});E[3].push({type:0,data:ub(C)})}E[4]=[];E[5]=[],E[6]=[];for(var S=0;S<=a.e.r;++S){y=[];y[1]=y[2]=[{type:0,data:ub(S+726270)}];E[4].push({type:2,data:pb(y)});E[5].push({type:0,data:ub(S)});E[6].push({type:0,data:ub(S)})}T[A].messages[0].data=pb(E)}k.content=Tb(bb(T));k.size=k.content.length;delete b[46];var _=vb(b[4][0].data);{_[7][0].data=ub(a.e.r+1);var x=vb(_[1][0].data);var O=_b(x[2][0].data);k=Ke.find(l,f[O].location);T=mb(kb(k.content));{if(T[0].id!=O)throw"Bad HeaderStorageBucket";var R=vb(T[0].messages[0].data);for(S=0;S<i.length;++S){var I=vb(R[2][0].data);I[1][0].data=ub(S);I[4][0].data=ub(i[S].length);R[2][S]={type:R[2][0].type,data:pb(I)}}T[0].messages[0].data=pb(R)}k.content=Tb(bb(T));k.size=k.content.length;var N=_b(_[2][0].data);k=Ke.find(l,f[N].location);T=mb(kb(k.content));{if(T[0].id!=N)throw"Bad HeaderStorageBucket";R=vb(T[0].messages[0].data);for(C=0;C<=a.e.c;++C){I=vb(R[2][0].data);I[1][0].data=ub(C);I[4][0].data=ub(a.e.r+1);R[2][C]={type:R[2][0].type,data:pb(I)}}T[0].messages[0].data=pb(R)}k.content=Tb(bb(T));k.size=k.content.length;var D=_b(_[4][0].data);(function(){var e=Ke.find(l,f[D].location);var r=mb(kb(e.content));var t;for(var a=0;a<r.length;++a){var n=r[a];if(n.id==D)t=n}var i=vb(t.messages[0].data);{i[3]=[];var o=[];s.forEach(function(e,r){o[1]=[{type:0,data:ub(r)}];o[2]=[{type:0,data:ub(1)}];o[3]=[{type:2,data:ib(e)}];i[3].push({type:2,data:pb(o)})})}t.messages[0].data=pb(i);var c=bb(r);var h=Tb(c);e.content=h;e.size=e.content.length})();var F=vb(_[3][0].data);{var P=F[1][0];delete F[2];var L=vb(P.data);{var M=_b(L[2][0].data);(function(){var e=Ke.find(l,f[M].location);var r=mb(kb(e.content));var t;for(var n=0;n<r.length;++n){var o=r[n];if(o.id==M)t=o}var c=vb(t.messages[0].data);{delete c[6];delete F[7];var h=new Uint8Array(c[5][0].data);c[5]=[];var u=0;for(var d=0;d<=a.e.r;++d){var v=vb(h);u+=Mb(v,i[d],s);v[1][0].data=ub(d);c[5].push({data:pb(v),type:2})}c[1]=[{type:0,data:ub(a.e.c+1)}];c[2]=[{type:0,data:ub(a.e.r+1)}];c[3]=[{type:0,data:ub(u)}];c[4]=[{type:0,data:ub(a.e.r+1)}]}t.messages[0].data=pb(c);var p=bb(r);var g=Tb(p);e.content=g;e.size=e.content.length})()}P.data=pb(L)}_[3][0].data=pb(F)}b[4][0].data=pb(_)}v.messages[0].data=pb(b);var U=bb(d);var B=Tb(U);u.content=B;u.size=u.content.length;return l}function Bb(e){return function r(t){for(var a=0;a!=e.length;++a){var n=e[a];if(t[n[0]]===undefined)t[n[0]]=n[1];if(n[2]==="n")t[n[0]]=Number(t[n[0]])}}}function Wb(e){Bb([["cellNF",false],["cellHTML",true],["cellFormula",true],["cellStyles",false],["cellText",true],["cellDates",false],["sheetStubs",false],["sheetRows",0,"n"],["bookDeps",false],["bookSheets",false],["bookProps",false],["bookFiles",false],["bookVBA",false],["password",""],["WTF",false]])(e)}function Hb(e){Bb([["cellDates",false],["bookSST",false],["bookType","xlsx"],["compression",false],["WTF",false]])(e)}function zb(e){if(qn.WS.indexOf(e)>-1)return"sheet";if(qn.CS&&e==qn.CS)return"chart";if(qn.DS&&e==qn.DS)return"dialog";if(qn.MS&&e==qn.MS)return"macro";return e&&e.length?e:"sheet"}function Vb(e,r){if(!e)return 0;try{e=r.map(function a(r){if(!r.id)r.id=r.strRelID;return[r.name,e["!id"][r.id].Target,zb(e["!id"][r.id].Type)]})}catch(t){return null}return!e||e.length===0?null:e}function Gb(e,r,t,a,n,i,s,f,o,l,c,h){try{i[a]=Qn(Rr(e,t,true),r);var u=Or(e,r);var d;switch(f){case"sheet":d=pg(u,r,n,o,i[a],l,c,h);break;case"chart":d=gg(u,r,n,o,i[a],l,c,h);if(!d||!d["!drawel"])break;var v=Lr(d["!drawel"].Target,r);var p=Zn(v);var g=th(Rr(e,v,true),Qn(Rr(e,p,true),v));var m=Lr(g,v);var b=Zn(m);d=Pp(Rr(e,m,true),m,o,Qn(Rr(e,b,true),m),l,d);break;case"macro":d=mg(u,r,n,o,i[a],l,c,h);break;case"dialog":d=bg(u,r,n,o,i[a],l,c,h);break;default:throw new Error("Unrecognized sheet type "+f);}s[a]=d;var w=[];if(i&&i[a])rr(i[a]).forEach(function(t){var n="";if(i[a][t].Type==qn.CMNT){n=Lr(i[a][t].Target,r);var s=Ag(Or(e,n,true),n,o);if(!s||!s.length)return;ih(d,s,false)}if(i[a][t].Type==qn.TCMNT){n=Lr(i[a][t].Target,r);w=w.concat(oh(Or(e,n,true),o))}});if(w&&w.length)ih(d,w,true,o.people||[])}catch(k){if(o.WTF)throw k}}function jb(e){return e.charAt(0)=="/"?e.slice(1):e}function Xb(e,r){ze();r=r||{};Wb(r);if(_r(e,"META-INF/manifest.xml"))return Zm(e,r);if(_r(e,"objectdata.xml"))return Zm(e,r);if(_r(e,"Index/Document.iwa")){if(typeof Uint8Array=="undefined")throw new Error("NUMBERS file parsing requires Uint8Array support");if(typeof Lb!="undefined"){if(e.FileIndex)return Lb(e);var t=Ke.utils.cfb_new();Nr(e).forEach(function(r){Dr(t,r,Ir(e,r))});return Lb(t)}throw new Error("Unsupported NUMBERS file")}if(!_r(e,"[Content_Types].xml")){if(_r(e,"index.xml.gz"))throw new Error("Unsupported NUMBERS 08 file");if(_r(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Error("Unsupported ZIP file")}var a=Nr(e);var n=Kn(Rr(e,"[Content_Types].xml"));var i=false;var s,f;if(n.workbooks.length===0){f="xl/workbook.xml";if(Or(e,f,true))n.workbooks.push(f)}if(n.workbooks.length===0){f="xl/workbook.bin";if(!Or(e,f,true))throw new Error("Could not find workbook");n.workbooks.push(f);i=true}if(n.workbooks[0].slice(-3)=="bin")i=true;var o={};var l={};if(!r.bookSheets&&!r.bookProps){xd=[];if(n.sst)try{xd=Tg(Or(e,jb(n.sst)),n.sst,r)}catch(c){if(r.WTF)throw c}if(r.cellStyles&&n.themes.length)o=kg(Rr(e,n.themes[0].replace(/^\//,""),true)||"",n.themes[0],r);if(n.style)l=wg(Or(e,jb(n.style)),n.style,o,r)}n.links.map(function(t){try{var a=Qn(Rr(e,Zn(jb(t))),t);return Cg(Or(e,jb(t)),a,t,r)}catch(n){}});var h=vg(Or(e,jb(n.workbooks[0])),n.workbooks[0],r);var u={},d="";if(n.coreprops.length){d=Or(e,jb(n.coreprops[0]),true);if(d)u=hi(d);if(n.extprops.length!==0){d=Or(e,jb(n.extprops[0]),true);if(d)mi(d,u,r)}}var v={};if(!r.bookSheets||r.bookProps){if(n.custprops.length!==0){d=Rr(e,jb(n.custprops[0]),true);if(d)v=ki(d,r)}}var p={};if(r.bookSheets||r.bookProps){if(h.Sheets)s=h.Sheets.map(function I(e){return e.name});else if(u.Worksheets&&u.SheetNames.length>0)s=u.SheetNames;if(r.bookProps){p.Props=u;p.Custprops=v}if(r.bookSheets&&typeof s!=="undefined")p.SheetNames=s;if(r.bookSheets?p.SheetNames:r.bookProps)return p}s={};var g={};if(r.bookDeps&&n.calcchain)g=Eg(Or(e,jb(n.calcchain)),n.calcchain,r);var m=0;var b={};var w,k;{var T=h.Sheets;u.Worksheets=T.length;u.SheetNames=[];for(var A=0;A!=T.length;++A){u.SheetNames[A]=T[A].name}}var E=i?"bin":"xml";var C=n.workbooks[0].lastIndexOf("/");var y=(n.workbooks[0].slice(0,C+1)+"_rels/"+n.workbooks[0].slice(C+1)+".rels").replace(/^\//,"");if(!_r(e,y))y="xl/_rels/workbook."+E+".rels";var S=Qn(Rr(e,y,true),y.replace(/_rels.*/,"s5s"));if((n.metadata||[]).length>=1){r.xlmeta=yg(Or(e,jb(n.metadata[0])),n.metadata[0],r)}if((n.people||[]).length>=1){r.people=ch(Or(e,jb(n.people[0])),r)}if(S)S=Vb(S,h.Sheets);var _=Or(e,"xl/worksheets/sheet.xml",true)?1:0;e:for(m=0;m!=u.Worksheets;++m){var x="sheet";if(S&&S[m]){w="xl/"+S[m][1].replace(/[\/]?xl\//,"");if(!_r(e,w))w=S[m][1];if(!_r(e,w))w=y.replace(/_rels\/.*$/,"")+S[m][1];x=S[m][2]}else{w="xl/worksheets/sheet"+(m+1-_)+"."+E;w=w.replace(/sheet0\./,"sheet.")}k=w.replace(/^(.*)(\/)([^\/]*)$/,"$1/_rels/$3.rels");if(r&&r.sheets!=null)switch(typeof r.sheets){case"number":if(m!=r.sheets)continue e;break;case"string":if(u.SheetNames[m].toLowerCase()!=r.sheets.toLowerCase())continue e;break;default:if(Array.isArray&&Array.isArray(r.sheets)){var O=false;for(var R=0;R!=r.sheets.length;++R){if(typeof r.sheets[R]=="number"&&r.sheets[R]==m)O=1;if(typeof r.sheets[R]=="string"&&r.sheets[R].toLowerCase()==u.SheetNames[m].toLowerCase())O=1}if(!O)continue e};}Gb(e,w,k,u.SheetNames[m],m,b,s,x,r,h,o,l)}p={Directory:n,Workbook:h,Props:u,Custprops:v,Deps:g,Sheets:s,SheetNames:u.SheetNames,Strings:xd,Styles:l,Themes:o,SSF:br(X)};if(r&&r.bookFiles){if(e.files){p.keys=a;p.files=e.files}else{p.keys=[];p.files={};e.FullPaths.forEach(function(r,t){r=r.replace(/^Root Entry[\/]/,"");p.keys.push(r);p.files[r]=e.FileIndex[t]})}}if(r&&r.bookVBA){if(n.vba.length>0)p.vbaraw=Or(e,jb(n.vba[0]),true);else if(n.defaults&&n.defaults.bin===bh)p.vbaraw=Or(e,"xl/vbaProject.bin",true)}return p}function $b(e,r){var t=r||{};var a="Workbook",n=Ke.find(e,a);try{a="/!DataSpaces/Version";n=Ke.find(e,a);if(!n||!n.content)throw new Error("ECMA-376 Encrypted file missing "+a);Ko(n.content);a="/!DataSpaces/DataSpaceMap";n=Ke.find(e,a);if(!n||!n.content)throw new Error("ECMA-376 Encrypted file missing "+a);var i=qo(n.content);if(i.length!==1||i[0].comps.length!==1||i[0].comps[0].t!==0||i[0].name!=="StrongEncryptionDataSpace"||i[0].comps[0].v!=="EncryptedPackage")throw new Error("ECMA-376 Encrypted file bad "+a);a="/!DataSpaces/DataSpaceInfo/StrongEncryptionDataSpace";n=Ke.find(e,a);if(!n||!n.content)throw new Error("ECMA-376 Encrypted file missing "+a);var s=Zo(n.content);if(s.length!=1||s[0]!="StrongEncryptionTransform")throw new Error("ECMA-376 Encrypted file bad "+a);a="/!DataSpaces/TransformInfo/StrongEncryptionTransform/!Primary";n=Ke.find(e,a);if(!n||!n.content)throw new Error("ECMA-376 Encrypted file missing "+a);el(n.content)}catch(f){}a="/EncryptionInfo";n=Ke.find(e,a);if(!n||!n.content)throw new Error("ECMA-376 Encrypted file missing "+a);var o=al(n.content);a="/EncryptedPackage";n=Ke.find(e,a);if(!n||!n.content)throw new Error("ECMA-376 Encrypted file missing "+a);if(o[0]==4&&typeof decrypt_agile!=="undefined")return decrypt_agile(o[1],n.content,t.password||"",t);if(o[0]==2&&typeof decrypt_std76!=="undefined")return decrypt_std76(o[1],n.content,t.password||"",t);throw new Error("File is password-protected")}function Yb(e,r){if(r.bookType=="ods")return tb(e,r);if(r.bookType=="numbers")return Ub(e,r);if(r.bookType=="xlsb")return Kb(e,r);return Jb(e,r)}function Kb(e,r){ah=1024;if(e&&!e.SSF){e.SSF=br(X)}if(e&&e.SSF){ze();He(e.SSF);r.revssf=nr(e.SSF);r.revssf[e.SSF[65535]]=0;r.ssf=e.SSF}r.rels={};r.wbrels={};r.Strings=[];r.Strings.Count=0;r.Strings.Unique=0;if(Rd)r.revStrings=new Map;else{r.revStrings={};r.revStrings.foo=[];delete r.revStrings.foo}var t=r.bookType=="xlsb"?"bin":"xml";var a=Th.indexOf(r.bookType)>-1;var n=Yn();Hb(r=r||{});var i=Fr();var s="",f=0;r.cellXfs=[];Fd(r.cellXfs,{},{revssf:{General:0}});if(!e.Props)e.Props={};s="docProps/core.xml";Dr(i,s,di(e.Props,r));n.coreprops.push(s);ri(r.rels,2,s,qn.CORE_PROPS);s="docProps/app.xml";if(e.Props&&e.Props.SheetNames){}else if(!e.Workbook||!e.Workbook.Sheets)e.Props.SheetNames=e.SheetNames;else{var o=[];for(var l=0;l<e.SheetNames.length;++l)if((e.Workbook.Sheets[l]||{}).Hidden!=2)o.push(e.SheetNames[l]);e.Props.SheetNames=o}e.Props.Worksheets=e.Props.SheetNames.length;Dr(i,s,bi(e.Props,r));n.extprops.push(s);ri(r.rels,3,s,qn.EXT_PROPS);if(e.Custprops!==e.Props&&rr(e.Custprops||{}).length>0){s="docProps/custom.xml";Dr(i,s,Ti(e.Custprops,r));n.custprops.push(s);ri(r.rels,4,s,qn.CUST_PROPS)}for(f=1;f<=e.SheetNames.length;++f){var c={"!id":{}};var h=e.Sheets[e.SheetNames[f-1]];var u=(h||{})["!type"]||"sheet";switch(u){case"chart":;default:s="xl/worksheets/sheet"+f+"."+t;Dr(i,s,_g(f-1,s,r,e,c));n.sheets.push(s);ri(r.wbrels,-1,"worksheets/sheet"+f+"."+t,qn.WS[0]);}if(h){var d=h["!comments"];var v=false;var p="";if(d&&d.length>0){p="xl/comments"+f+"."+t;Dr(i,p,Ig(d,p,r));n.comments.push(p);ri(c,-1,"../comments"+f+"."+t,qn.CMNT);v=true}if(h["!legacy"]){if(v)Dr(i,"xl/drawings/vmlDrawing"+f+".vml",nh(f,h["!comments"]))}delete h["!comments"];delete h["!legacy"]}if(c["!id"].rId1)Dr(i,Zn(s),ei(c))}if(r.Strings!=null&&r.Strings.length>0){s="xl/sharedStrings."+t;Dr(i,s,Rg(r.Strings,s,r));n.strs.push(s);ri(r.wbrels,-1,"sharedStrings."+t,qn.SST)}s="xl/workbook."+t;Dr(i,s,Sg(e,s,r));n.workbooks.push(s);ri(r.rels,1,s,qn.WB);s="xl/theme/theme1.xml";Dr(i,s,Ic(e.Themes,r));n.themes.push(s);ri(r.wbrels,-1,"theme/theme1.xml",qn.THEME);s="xl/styles."+t;Dr(i,s,Og(e,s,r));n.styles.push(s);ri(r.wbrels,-1,"styles."+t,qn.STY);if(e.vbaraw&&a){s="xl/vbaProject.bin";Dr(i,s,e.vbaraw);n.vba.push(s);ri(r.wbrels,-1,"vbaProject.bin",qn.VBA)}s="xl/metadata."+t;Dr(i,s,Ng(s));n.metadata.push(s);ri(r.wbrels,-1,"metadata."+t,qn.XLMETA);Dr(i,"[Content_Types].xml",Jn(n,r));Dr(i,"_rels/.rels",ei(r.rels));Dr(i,"xl/_rels/workbook."+t+".rels",ei(r.wbrels));delete r.revssf;delete r.ssf;return i}function Jb(e,r){ah=1024;if(e&&!e.SSF){e.SSF=br(X)}if(e&&e.SSF){ze();He(e.SSF);r.revssf=nr(e.SSF);r.revssf[e.SSF[65535]]=0;r.ssf=e.SSF}r.rels={};r.wbrels={};r.Strings=[];r.Strings.Count=0;r.Strings.Unique=0;if(Rd)r.revStrings=new Map;else{r.revStrings={};r.revStrings.foo=[];delete r.revStrings.foo}var t="xml";var a=Th.indexOf(r.bookType)>-1;var n=Yn();Hb(r=r||{});var i=Fr();var s="",f=0;r.cellXfs=[];Fd(r.cellXfs,{},{revssf:{General:0}});if(!e.Props)e.Props={};s="docProps/core.xml";Dr(i,s,di(e.Props,r));n.coreprops.push(s);ri(r.rels,2,s,qn.CORE_PROPS);s="docProps/app.xml";if(e.Props&&e.Props.SheetNames){}else if(!e.Workbook||!e.Workbook.Sheets)e.Props.SheetNames=e.SheetNames;else{var o=[];for(var l=0;l<e.SheetNames.length;++l)if((e.Workbook.Sheets[l]||{}).Hidden!=2)o.push(e.SheetNames[l]);e.Props.SheetNames=o}e.Props.Worksheets=e.Props.SheetNames.length;Dr(i,s,bi(e.Props,r));n.extprops.push(s);ri(r.rels,3,s,qn.EXT_PROPS);if(e.Custprops!==e.Props&&rr(e.Custprops||{}).length>0){s="docProps/custom.xml";Dr(i,s,Ti(e.Custprops,r));n.custprops.push(s);ri(r.rels,4,s,qn.CUST_PROPS)}var c=["SheetJ5"];r.tcid=0;for(f=1;f<=e.SheetNames.length;++f){var h={"!id":{}};var u=e.Sheets[e.SheetNames[f-1]];var d=(u||{})["!type"]||"sheet";switch(d){case"chart":;default:s="xl/worksheets/sheet"+f+"."+t;Dr(i,s,pv(f-1,r,e,h));n.sheets.push(s);ri(r.wbrels,-1,"worksheets/sheet"+f+"."+t,qn.WS[0]);}if(u){var v=u["!comments"];var p=false;var g="";if(v&&v.length>0){var m=false;v.forEach(function(e){e[1].forEach(function(e){if(e.T==true)m=true})});if(m){g="xl/threadedComments/threadedComment"+f+"."+t;Dr(i,g,lh(v,c,r));n.threadedcomments.push(g);ri(h,-1,"../threadedComments/threadedComment"+f+"."+t,qn.TCMNT)}g="xl/comments"+f+"."+t;Dr(i,g,fh(v,r));n.comments.push(g);ri(h,-1,"../comments"+f+"."+t,qn.CMNT);p=true}if(u["!legacy"]){if(p)Dr(i,"xl/drawings/vmlDrawing"+f+".vml",nh(f,u["!comments"]))}delete u["!comments"];delete u["!legacy"]}if(h["!id"].rId1)Dr(i,Zn(s),ei(h))}if(r.Strings!=null&&r.Strings.length>0){s="xl/sharedStrings."+t;Dr(i,s,Ho(r.Strings,r));n.strs.push(s);ri(r.wbrels,-1,"sharedStrings."+t,qn.SST)}s="xl/workbook."+t;Dr(i,s,rg(e,r));n.workbooks.push(s);ri(r.rels,1,s,qn.WB);s="xl/theme/theme1.xml";Dr(i,s,Ic(e.Themes,r));n.themes.push(s);ri(r.wbrels,-1,"theme/theme1.xml",qn.THEME);s="xl/styles."+t;Dr(i,s,$l(e,r));n.styles.push(s);ri(r.wbrels,-1,"styles."+t,qn.STY);if(e.vbaraw&&a){s="xl/vbaProject.bin";Dr(i,s,e.vbaraw);n.vba.push(s);ri(r.wbrels,-1,"vbaProject.bin",qn.VBA)}s="xl/metadata."+t;Dr(i,s,Jc());n.metadata.push(s);ri(r.wbrels,-1,"metadata."+t,qn.XLMETA);if(c.length>1){s="xl/persons/person.xml";Dr(i,s,hh(c,r));n.people.push(s);ri(r.wbrels,-1,"persons/person.xml",qn.PEOPLE)}Dr(i,"[Content_Types].xml",Jn(n,r));Dr(i,"_rels/.rels",ei(r.rels));Dr(i,"xl/_rels/workbook."+t+".rels",ei(r.wbrels));delete r.revssf;delete r.ssf;return i}function qb(e,r){var t="";switch((r||{}).type||"base64"){case"buffer":return[e[0],e[1],e[2],e[3],e[4],e[5],e[6],e[7]];case"base64":t=k(e.slice(0,12));break;case"binary":t=e;break;case"array":return[e[0],e[1],e[2],e[3],e[4],e[5],e[6],e[7]];default:throw new Error("Unrecognized type "+(r&&r.type||"undefined"));}return[t.charCodeAt(0),t.charCodeAt(1),t.charCodeAt(2),t.charCodeAt(3),t.charCodeAt(4),t.charCodeAt(5),t.charCodeAt(6),t.charCodeAt(7)]}function Zb(e,r){if(Ke.find(e,"EncryptedPackage"))return $b(e,r);return vm(e,r)}function Qb(e,r){var t,a=e;var n=r||{};if(!n.type)n.type=T&&Buffer.isBuffer(e)?"buffer":"base64";t=Pr(a,n);return Xb(t,n)}function ew(e,r){var t=0;e:while(t<e.length)switch(e.charCodeAt(t)){case 10:;case 13:;case 32:++t;break;case 60:return jg(e.slice(t),r);default:break e;}return So.to_workbook(e,r)}function rw(e,r){var t="",a=qb(e,r);switch(r.type){case"base64":t=k(e);break;case"binary":t=e;break;case"buffer":t=e.toString("binary");break;case"array":t=mr(e);break;default:throw new Error("Unrecognized type "+r.type);}if(a[0]==239&&a[1]==187&&a[2]==191)t=lt(t);r.type="binary";return ew(t,r)}function tw(e,r){var t=e;if(r.type=="base64")t=k(t);t=a.utils.decode(1200,t.slice(2),"str");r.type="binary";return ew(t,r)}function aw(e){return!e.match(/[^\x00-\x7F]/)?e:ct(e)}function nw(e,r,t,a){if(a){t.type="string";return So.to_workbook(e,t)}return So.to_workbook(r,t)}function iw(e,r){l();var t=r||{};if(typeof ArrayBuffer!=="undefined"&&e instanceof ArrayBuffer)return iw(new Uint8Array(e),(t=br(t),t.type="array",t));if(typeof Uint8Array!=="undefined"&&e instanceof Uint8Array&&!t.type)t.type=typeof Deno!=="undefined"?"buffer":"array";var a=e,n=[0,0,0,0],i=false;if(t.cellStyles){t.cellNF=true;t.sheetStubs=true}Od={};if(t.dateNF)Od.dateNF=t.dateNF;if(!t.type)t.type=T&&Buffer.isBuffer(e)?"buffer":"base64";if(t.type=="file"){t.type=T?"buffer":"binary";a=er(e);if(typeof Uint8Array!=="undefined"&&!T)t.type="array"}if(t.type=="string"){i=true;t.type="binary";t.codepage=65001;a=aw(e)}if(t.type=="array"&&typeof Uint8Array!=="undefined"&&e instanceof Uint8Array&&typeof ArrayBuffer!=="undefined"){var s=new ArrayBuffer(3),f=new Uint8Array(s);f.foo="bar";if(!f.foo){t=br(t);t.type="array";return iw(O(a),t)}}switch((n=qb(a,t))[0]){case 208:if(n[1]===207&&n[2]===17&&n[3]===224&&n[4]===161&&n[5]===177&&n[6]===26&&n[7]===225)return Zb(Ke.read(a,t),t);break;case 9:if(n[1]<=8)return vm(a,t);break;case 60:return jg(a,t);case 73:if(n[1]===73&&n[2]===42&&n[3]===0)throw new Error("TIFF Image File is not a spreadsheet");if(n[1]===68)return _o(a,t);break;case 84:if(n[1]===65&&n[2]===66&&n[3]===76)return Co.to_workbook(a,t);break;case 80:return n[1]===75&&n[2]<9&&n[3]<9?Qb(a,t):nw(e,a,t,i);case 239:return n[3]===60?jg(a,t):nw(e,a,t,i);case 255:if(n[1]===254){return tw(a,t)}else if(n[1]===0&&n[2]===2&&n[3]===0)return xo.to_workbook(a,t);break;case 0:if(n[1]===0){if(n[2]>=2&&n[3]===0)return xo.to_workbook(a,t);if(n[2]===0&&(n[3]===8||n[3]===9))return xo.to_workbook(a,t)}break;case 3:;case 131:;case 139:;case 140:return Ao.to_workbook(a,t);case 123:if(n[1]===92&&n[2]===114&&n[3]===116)return gl.to_workbook(a,t);break;case 10:;case 13:;case 32:return rw(a,t);case 137:if(n[1]===80&&n[2]===78&&n[3]===71)throw new Error("PNG Image File is not a spreadsheet");break;}if(To.indexOf(n[0])>-1&&n[2]<=12&&n[3]<=31)return Ao.to_workbook(a,t);return nw(e,a,t,i)}function sw(e,r){var t=r||{};t.type="file";return iw(e,t)}function fw(e,r){switch(r.type){case"base64":;case"binary":break;case"buffer":;case"array":r.type="";break;case"file":return Qe(r.file,Ke.write(e,{type:T?"buffer":""}));case"string":throw new Error("'string' output type invalid for '"+r.bookType+"' files");default:throw new Error("Unrecognized type "+r.type);}return Ke.write(e,r)}function ow(e,r){var t=br(r||{});var a=Yb(e,t);return cw(a,t)}function lw(e,r){var t=br(r||{});var a=Jb(e,t);return cw(a,t)}function cw(e,r){var t={};var a=T?"nodebuffer":typeof Uint8Array!=="undefined"?"array":"string";if(r.compression)t.compression="DEFLATE";if(r.password)t.type=a;else switch(r.type){case"base64":t.type="base64";break;case"binary":t.type="string";break;case"string":throw new Error("'string' output type invalid for '"+r.bookType+"' files");case"buffer":;case"file":t.type=a;break;default:throw new Error("Unrecognized type "+r.type);}var n=e.FullPaths?Ke.write(e,{fileType:"zip",type:{nodebuffer:"buffer",string:"binary"}[t.type]||t.type,compression:!!r.compression}):e.generate(t);if(typeof Deno!=="undefined"){if(typeof n=="string"){if(r.type=="binary"||r.type=="base64")return n;n=new Uint8Array(S(n))}}if(r.password&&typeof encrypt_agile!=="undefined")return fw(encrypt_agile(n,r.password),r);if(r.type==="file")return Qe(r.file,n);return r.type=="string"?lt(n):n}function hw(e,r){var t=r||{};var a=pm(e,t);return fw(a,t)}function uw(e,r,t){if(!t)t="";var a=t+e;switch(r.type){case"base64":return w(ct(a));case"binary":return ct(a);case"string":return e;case"file":return Qe(r.file,a,"utf8");case"buffer":{if(T)return A(a,"utf8");else if(typeof TextEncoder!=="undefined")return(new TextEncoder).encode(a);else return uw(a,{type:"binary"}).split("").map(function(e){return e.charCodeAt(0)})};}throw new Error("Unrecognized type "+r.type)}function dw(e,r){switch(r.type){case"base64":return w(e);case"binary":return e;case"string":return e;case"file":return Qe(r.file,e,"binary");case"buffer":{if(T)return A(e,"binary");else return e.split("").map(function(e){return e.charCodeAt(0)})};}throw new Error("Unrecognized type "+r.type)}function vw(e,r){switch(r.type){case"string":;case"base64":;case"binary":var t="";for(var a=0;a<e.length;++a)t+=String.fromCharCode(e[a]);return r.type=="base64"?w(t):r.type=="string"?lt(t):t;case"file":return Qe(r.file,e);case"buffer":return e;default:throw new Error("Unrecognized type "+r.type);}}function pw(e,r){l();Zp(e);var t=br(r||{});if(t.cellStyles){t.cellNF=true;t.sheetStubs=true}if(t.type=="array"){t.type="binary";var a=pw(e,t);t.type="array";return S(a)}return lw(e,t)}function gw(e,r){l();Zp(e);var t=br(r||{});if(t.cellStyles){t.cellNF=true;t.sheetStubs=true}if(t.type=="array"){t.type="binary";var a=gw(e,t);t.type="array";return S(a)}var n=0;if(t.sheet){if(typeof t.sheet=="number")n=t.sheet;else n=e.SheetNames.indexOf(t.sheet);if(!e.SheetNames[n])throw new Error("Sheet not found: "+t.sheet+" : "+typeof t.sheet)}switch(t.bookType||"xlsb"){case"xml":;case"xlml":return uw(nm(e,t),t);case"slk":;case"sylk":return uw(Eo.from_sheet(e.Sheets[e.SheetNames[n]],t),t);case"htm":;case"html":return uw(Vm(e.Sheets[e.SheetNames[n]],t),t);case"txt":return dw(Sw(e.Sheets[e.SheetNames[n]],t),t);case"csv":return uw(yw(e.Sheets[e.SheetNames[n]],t),t,"\ufeff");case"dif":return uw(Co.from_sheet(e.Sheets[e.SheetNames[n]],t),t);case"dbf":return vw(Ao.from_sheet(e.Sheets[e.SheetNames[n]],t),t);case"prn":return uw(So.from_sheet(e.Sheets[e.SheetNames[n]],t),t);case"rtf":return uw(gl.from_sheet(e.Sheets[e.SheetNames[n]],t),t);case"eth":return uw(yo.from_sheet(e.Sheets[e.SheetNames[n]],t),t);case"fods":return uw(tb(e,t),t);case"wk1":return vw(xo.sheet_to_wk1(e.Sheets[e.SheetNames[n]],t),t);case"wk3":return vw(xo.book_to_wk3(e,t),t);case"biff2":if(!t.biff)t.biff=2;case"biff3":if(!t.biff)t.biff=3;case"biff4":if(!t.biff)t.biff=4;return vw(Lm(e,t),t);case"biff5":if(!t.biff)t.biff=5;case"biff8":;case"xla":;case"xls":if(!t.biff)t.biff=8;return hw(e,t);case"xlsx":;case"xlsm":;case"xlam":;case"xlsb":;case"numbers":;case"ods":return ow(e,t);default:throw new Error("Unrecognized bookType |"+t.bookType+"|");}}function mw(e){if(e.bookType)return;var r={xls:"biff8",htm:"html",slk:"sylk",socialcalc:"eth",Sh33tJS:"WTF"};var t=e.file.slice(e.file.lastIndexOf(".")).toLowerCase();if(t.match(/^\.[a-z]+$/))e.bookType=t.slice(1);e.bookType=r[e.bookType]||e.bookType}function bw(e,r,t){var a=t||{};a.type="file";a.file=r;mw(a);return gw(e,a)}function ww(e,r,t){var a=t||{};a.type="file";a.file=r;mw(a);return pw(e,a)}function kw(e,r,t,a){var n=t||{};n.type="file";n.file=e;mw(n);n.type="buffer";var i=a;if(!(i instanceof Function))i=t;return Je.writeFile(e,gw(r,n),i)}function Tw(e,r,t,a,n,i,s,f){var o=Ta(t);var l=f.defval,c=f.raw||!Object.prototype.hasOwnProperty.call(f,"raw");var h=true;var u=n===1?[]:{};if(n!==1){if(Object.defineProperty)try{Object.defineProperty(u,"__rowNum__",{value:t,enumerable:false})}catch(d){u.__rowNum__=t}else u.__rowNum__=t}if(!s||e[t])for(var v=r.s.c;v<=r.e.c;++v){var p=s?e[t][v]:e[a[v]+o];if(p===undefined||p.t===undefined){if(l===undefined)continue;if(i[v]!=null){u[i[v]]=l}continue}var g=p.v;switch(p.t){case"z":if(g==null)break;continue;case"e":g=g==0?null:void 0;break;case"s":;case"d":;case"b":;case"n":break;default:throw new Error("unrecognized type "+p.t);}if(i[v]!=null){if(g==null){if(p.t=="e"&&g===null)u[i[v]]=null;else if(l!==undefined)u[i[v]]=l;else if(c&&g===null)u[i[v]]=null;else continue}else{u[i[v]]=c&&(p.t!=="n"||p.t==="n"&&f.rawNumbers!==false)?g:Pa(p,g,f)}if(g!=null)h=false}}return{row:u,isempty:h}}function Aw(e,r){if(e==null||e["!ref"]==null)return[];var t={t:"n",v:0},a=0,n=1,i=[],s=0,f="";var o={s:{r:0,c:0},e:{r:0,c:0}};var l=r||{};var c=l.range!=null?l.range:e["!ref"];if(l.header===1)a=1;else if(l.header==="A")a=2;else if(Array.isArray(l.header))a=3;else if(l.header==null)a=0;switch(typeof c){case"string":o=Da(c);break;case"number":o=Da(e["!ref"]);o.s.r=c;break;default:o=c;}if(a>0)n=0;var h=Ta(o.s.r);var u=[];var d=[];var v=0,p=0;var g=Array.isArray(e);var m=o.s.r,b=0;var w={};if(g&&!e[m])e[m]=[];var k=l.skipHidden&&e["!cols"]||[];var T=l.skipHidden&&e["!rows"]||[];for(b=o.s.c;b<=o.e.c;++b){if((k[b]||{}).hidden)continue;u[b]=ya(b);t=g?e[m][b]:e[u[b]+h];switch(a){case 1:i[b]=b-o.s.c;break;case 2:i[b]=u[b];break;case 3:i[b]=l.header[b-o.s.c];break;default:if(t==null)t={w:"__EMPTY",t:"s"};f=s=Pa(t,null,l);p=w[s]||0;if(!p)w[s]=1;else{do{f=s+"_"+p++}while(w[f]);w[s]=p;w[f]=1}i[b]=f;}}for(m=o.s.r+n;m<=o.e.r;++m){if((T[m]||{}).hidden)continue;var A=Tw(e,o,m,u,a,i,g,l);if(A.isempty===false||(a===1?l.blankrows!==false:!!l.blankrows))d[v++]=A.row}d.length=v;return d}var Ew=/"/g;function Cw(e,r,t,a,n,i,s,f){var o=true;var l=[],c="",h=Ta(t);for(var u=r.s.c;u<=r.e.c;++u){if(!a[u])continue;var d=f.dense?(e[t]||[])[u]:e[a[u]+h];if(d==null)c="";else if(d.v!=null){o=false;c=""+(f.rawNumbers&&d.t=="n"?d.v:Pa(d,null,f));for(var v=0,p=0;v!==c.length;++v)if((p=c.charCodeAt(v))===n||p===i||p===34||f.forceQuotes){c='"'+c.replace(Ew,'""')+'"';break}if(c=="ID")c='"ID"'}else if(d.f!=null&&!d.F){o=false;c="="+d.f;if(c.indexOf(",")>=0)c='"'+c.replace(Ew,'""')+'"'}else c="";l.push(c)}if(f.blankrows===false&&o)return null;return l.join(s)}function yw(e,r){var t=[];var a=r==null?{}:r;if(e==null||e["!ref"]==null)return"";var n=Da(e["!ref"]);var i=a.FS!==undefined?a.FS:",",s=i.charCodeAt(0);var f=a.RS!==undefined?a.RS:"\n",o=f.charCodeAt(0);var l=new RegExp((i=="|"?"\\|":i)+"+$");var c="",h=[];a.dense=Array.isArray(e);var u=a.skipHidden&&e["!cols"]||[];var d=a.skipHidden&&e["!rows"]||[];for(var v=n.s.c;v<=n.e.c;++v)if(!(u[v]||{}).hidden)h[v]=ya(v);var p=0;for(var g=n.s.r;g<=n.e.r;++g){if((d[g]||{}).hidden)continue;c=Cw(e,n,g,h,s,o,i,a);if(c==null){continue}if(a.strip)c=c.replace(l,"");if(c||a.blankrows!==false)t.push((p++?f:"")+c)}delete a.dense;return t.join("")}function Sw(e,r){if(!r)r={};r.FS="\t";r.RS="\n";var t=yw(e,r);if(typeof a=="undefined"||r.type=="string")return t;var n=a.utils.encode(1200,t,"str");return String.fromCharCode(255)+String.fromCharCode(254)+n}function _w(e){var r="",t,a="";if(e==null||e["!ref"]==null)return[];var n=Da(e["!ref"]),i="",s=[],f;
 var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.s.r;c<=n.e.r;++c){i=Ta(c);for(f=n.s.c;f<=n.e.c;++f){r=s[f]+i;t=l?(e[c]||[])[f]:e[r];a="";if(t===undefined)continue;else if(t.F!=null){r=t.F;if(!t.f)continue;a=t.f;if(r.indexOf(":")==-1)r=r+":"+r}if(t.f!=null)a=t.f;else if(t.t=="z")continue;else if(t.t=="n"&&t.v!=null)a=""+t.v;else if(t.t=="b")a=t.v?"TRUE":"FALSE";else if(t.w!==undefined)a="'"+t.w;else if(t.v===undefined)continue;else if(t.t=="s")a="'"+t.v;else a=""+t.v;o[o.length]=r+"="+a}}return o}function xw(e,r,t){var a=t||{};var n=+!a.skipHeader;var i=e||{};var s=0,f=0;if(i&&a.origin!=null){if(typeof a.origin=="number")s=a.origin;else{var o=typeof a.origin=="string"?Oa(a.origin):a.origin;s=o.r;f=o.c}}var l;var c={s:{c:0,r:0},e:{c:f,r:s+r.length-1+n}};if(i["!ref"]){var h=Da(i["!ref"]);c.e.c=Math.max(c.e.c,h.e.c);c.e.r=Math.max(c.e.r,h.e.r);if(s==-1){s=h.e.r+1;c.e.r=s+r.length-1+n}}else{if(s==-1){s=0;c.e.r=r.length-1+n}}var u=a.header||[],d=0;r.forEach(function(e,r){rr(e).forEach(function(t){if((d=u.indexOf(t))==-1)u[d=u.length]=t;var o=e[t];var c="z";var h="";var v=Ra({c:f+d,r:s+r+n});l=Rw(i,v);if(o&&typeof o==="object"&&!(o instanceof Date)){i[v]=o}else{if(typeof o=="number")c="n";else if(typeof o=="boolean")c="b";else if(typeof o=="string")c="s";else if(o instanceof Date){c="d";if(!a.cellDates){c="n";o=fr(o)}h=a.dateNF||X[14]}else if(o===null&&a.nullError){c="e";o=0}if(!l)i[v]=l={t:c,v:o};else{l.t=c;l.v=o;delete l.w;delete l.R;if(h)l.z=h}if(h)l.z=h}})});c.e.c=Math.max(c.e.c,f+u.length-1);var v=Ta(s);if(n)for(d=0;d<u.length;++d)i[ya(d+f)+v]={t:"s",v:u[d]};i["!ref"]=Na(c);return i}function Ow(e,r){return xw(null,e,r)}function Rw(e,r,t){if(typeof r=="string"){if(Array.isArray(e)){var a=Oa(r);if(!e[a.r])e[a.r]=[];return e[a.r][a.c]||(e[a.r][a.c]={t:"z"})}return e[r]||(e[r]={t:"z"})}if(typeof r!="number")return Rw(e,Ra(r));return Rw(e,Ra({r:r,c:t||0}))}function Iw(e,r){if(typeof r=="number"){if(r>=0&&e.SheetNames.length>r)return r;throw new Error("Cannot find sheet # "+r)}else if(typeof r=="string"){var t=e.SheetNames.indexOf(r);if(t>-1)return t;throw new Error("Cannot find sheet name |"+r+"|")}else throw new Error("Cannot find sheet |"+r+"|")}function Nw(){return{SheetNames:[],Sheets:{}}}function Dw(e,r,t,a){var n=1;if(!t)for(;n<=65535;++n,t=undefined)if(e.SheetNames.indexOf(t="Sheet"+n)==-1)break;if(!t||e.SheetNames.length>=65535)throw new Error("Too many worksheets");if(a&&e.SheetNames.indexOf(t)>=0){var i=t.match(/(^.*?)(\d+)$/);n=i&&+i[2]||0;var s=i&&i[1]||t;for(++n;n<=65535;++n)if(e.SheetNames.indexOf(t=s+n)==-1)break}Jp(t);if(e.SheetNames.indexOf(t)>=0)throw new Error("Worksheet with name |"+t+"| already exists!");e.SheetNames.push(t);e.Sheets[t]=r;return t}function Fw(e,r,t){if(!e.Workbook)e.Workbook={};if(!e.Workbook.Sheets)e.Workbook.Sheets=[];var a=Iw(e,r);if(!e.Workbook.Sheets[a])e.Workbook.Sheets[a]={};switch(t){case 0:;case 1:;case 2:break;default:throw new Error("Bad sheet visibility setting "+t);}e.Workbook.Sheets[a].Hidden=t}function Pw(e,r){e.z=r;return e}function Lw(e,r,t){if(!r){delete e.l}else{e.l={Target:r};if(t)e.l.Tooltip=t}return e}function Mw(e,r,t){return Lw(e,"#"+r,t)}function Uw(e,r,t){if(!e.c)e.c=[];e.c.push({t:r,a:t||"SheetJS"})}function Bw(e,r,t,a){var n=typeof r!="string"?r:Da(r);var i=typeof r=="string"?r:Na(r);for(var s=n.s.r;s<=n.e.r;++s)for(var f=n.s.c;f<=n.e.c;++f){var o=Rw(e,s,f);o.t="n";o.F=i;delete o.v;if(s==n.s.r&&f==n.s.c){o.f=t;if(a)o.D=true}}return e}var Ww={encode_col:ya,encode_row:Ta,encode_cell:Ra,encode_range:Na,decode_col:Ca,decode_row:ka,split_cell:xa,decode_cell:Oa,decode_range:Ia,format_cell:Pa,sheet_add_aoa:Ma,sheet_add_json:xw,sheet_add_dom:Gm,aoa_to_sheet:Ua,json_to_sheet:Ow,table_to_sheet:jm,table_to_book:Xm,sheet_to_csv:yw,sheet_to_txt:Sw,sheet_to_json:Aw,sheet_to_html:Vm,sheet_to_formulae:_w,sheet_to_row_object_array:Aw,sheet_get_cell:Rw,book_new:Nw,book_append_sheet:Dw,book_set_sheet_visibility:Fw,cell_set_number_format:Pw,cell_set_hyperlink:Lw,cell_set_internal_link:Mw,cell_add_comment:Uw,sheet_set_array_formula:Bw,consts:{SHEET_VISIBLE:0,SHEET_HIDDEN:1,SHEET_VERY_HIDDEN:2}};var Hw;function zw(e){Hw=e}function Vw(e,r){var t=Hw();var a=r==null?{}:r;if(e==null||e["!ref"]==null){t.push(null);return t}var n=Da(e["!ref"]);var i=a.FS!==undefined?a.FS:",",s=i.charCodeAt(0);var f=a.RS!==undefined?a.RS:"\n",o=f.charCodeAt(0);var l=new RegExp((i=="|"?"\\|":i)+"+$");var c="",h=[];a.dense=Array.isArray(e);var u=a.skipHidden&&e["!cols"]||[];var d=a.skipHidden&&e["!rows"]||[];for(var v=n.s.c;v<=n.e.c;++v)if(!(u[v]||{}).hidden)h[v]=ya(v);var p=n.s.r;var g=false,m=0;t._read=function(){if(!g){g=true;return t.push("\ufeff")}while(p<=n.e.r){++p;if((d[p-1]||{}).hidden)continue;c=Cw(e,n,p-1,h,s,o,i,a);if(c!=null){if(a.strip)c=c.replace(l,"");if(c||a.blankrows!==false)return t.push((m++?f:"")+c)}}return t.push(null)};return t}function Gw(e,r){var t=Hw();var a=r||{};var n=a.header!=null?a.header:Bm;var i=a.footer!=null?a.footer:Wm;t.push(n);var s=Ia(e["!ref"]);a.dense=Array.isArray(e);t.push(zm(e,s,a));var f=s.s.r;var o=false;t._read=function(){if(f>s.e.r){if(!o){o=true;t.push("</table>"+i)}return t.push(null)}while(f<=s.e.r){t.push(Um(e,s,f,a));++f;break}};return t}function jw(e,r){var t=Hw({objectMode:true});if(e==null||e["!ref"]==null){t.push(null);return t}var a={t:"n",v:0},n=0,i=1,s=[],f=0,o="";var l={s:{r:0,c:0},e:{r:0,c:0}};var c=r||{};var h=c.range!=null?c.range:e["!ref"];if(c.header===1)n=1;else if(c.header==="A")n=2;else if(Array.isArray(c.header))n=3;switch(typeof h){case"string":l=Da(h);break;case"number":l=Da(e["!ref"]);l.s.r=h;break;default:l=h;}if(n>0)i=0;var u=Ta(l.s.r);var d=[];var v=0;var p=Array.isArray(e);var g=l.s.r,m=0;var b={};if(p&&!e[g])e[g]=[];var w=c.skipHidden&&e["!cols"]||[];var k=c.skipHidden&&e["!rows"]||[];for(m=l.s.c;m<=l.e.c;++m){if((w[m]||{}).hidden)continue;d[m]=ya(m);a=p?e[g][m]:e[d[m]+u];switch(n){case 1:s[m]=m-l.s.c;break;case 2:s[m]=d[m];break;case 3:s[m]=c.header[m-l.s.c];break;default:if(a==null)a={w:"__EMPTY",t:"s"};o=f=Pa(a,null,c);v=b[f]||0;if(!v)b[f]=1;else{do{o=f+"_"+v++}while(b[o]);b[f]=v;b[o]=1}s[m]=o;}}g=l.s.r+i;t._read=function(){while(g<=l.e.r){if((k[g-1]||{}).hidden)continue;var r=Tw(e,l,g,d,n,s,p,c);++g;if(r.isempty===false||(n===1?c.blankrows!==false:!!c.blankrows)){t.push(r.row);return}}return t.push(null)};return t}var Xw={to_json:jw,to_html:Gw,to_csv:Vw,set_readable:zw};if(typeof vm!=="undefined")e.parse_xlscfb=vm;e.parse_zip=Xb;e.read=iw;e.readFile=sw;e.readFileSync=sw;e.write=gw;e.writeFile=bw;e.writeFileSync=bw;e.writeFileAsync=kw;e.utils=Ww;e.writeXLSX=pw;e.writeFileXLSX=ww;e.SSF=Ve;if(typeof Xw!=="undefined")e.stream=Xw;if(typeof Ke!=="undefined")e.CFB=Ke;if(typeof require!=="undefined"){var $w=undefined;if(($w||{}).Readable)zw($w.Readable)}}if(typeof exports!=="undefined")make_xlsx_lib(exports);else if(typeof module!=="undefined"&&module.exports)make_xlsx_lib(module.exports);else if(typeof define==="function"&&define.amd)define("xlsx",function(){if(!XLSX.version)make_xlsx_lib(XLSX);return XLSX});else make_xlsx_lib(XLSX);if(typeof window!=="undefined"&&!window.XLSX)try{window.XLSX=XLSX}catch(e){}
 </script>
-<script>
+<script>// ===== 状態管理 =====
 var parsedData = { ep: null, ev: null, epori: null };
 var state = { ep: 'idle', ev: 'idle', epori: 'idle' };
-var uploadIconSVG = '<svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/></svg>';
+var COLORS = { ep: '#3b82f6', ev: '#10b981', epori: '#f59e0b' };
+var LABELS = { ep: 'EP', ev: 'EV', epori: 'epori' };
+var detailPage = 0;
+var DETAIL_PAGE_SIZE = 100;
+var mergedTs = [];
+var tsMaps = {};
 
-function setupZone(key) {
-  var dz = document.getElementById('dz-' + key);
-  var input = document.getElementById('input-' + key);
-  dz.addEventListener('click', function() { input.click(); });
-  dz.addEventListener('keydown', function(e) { if (e.key === 'Enter') input.click(); });
-  dz.addEventListener('dragover', function(e) { e.preventDefault(); dz.classList.add('dragging'); });
-  dz.addEventListener('dragleave', function() { dz.classList.remove('dragging'); });
-  dz.addEventListener('drop', function(e) {
-    e.preventDefault(); dz.classList.remove('dragging');
-    var file = e.dataTransfer.files[0];
-    if (file) handleFile(key, file);
-  });
-  input.addEventListener('change', function(e) {
-    var file = e.target.files[0];
-    if (file) handleFile(key, file);
-    input.value = '';
-  });
+// ===== ファイル解析 =====
+function dateToISO(ts) {
+  if (ts == null) return null;
+  if (typeof ts === 'string') return ts.slice(0, 19);
+  if (ts instanceof Date) {
+    var y = ts.getFullYear();
+    var mo = ('0' + (ts.getMonth() + 1)).slice(-2);
+    var d  = ('0' + ts.getDate()).slice(-2);
+    var h  = ('0' + ts.getHours()).slice(-2);
+    var mi = ('0' + ts.getMinutes()).slice(-2);
+    var s  = ('0' + ts.getSeconds()).slice(-2);
+    return y + '-' + mo + '-' + d + 'T' + h + ':' + mi + ':' + s;
+  }
+  return String(ts).slice(0, 19);
 }
 
 function parseEpEv(rows) {
@@ -255,8 +265,9 @@ function parseEpEv(rows) {
     var r = rows[i];
     var ts = r[0]; var val = r[1];
     if (ts == null || val == null || typeof val !== 'number') continue;
-    var tsStr = (typeof ts === 'string') ? ts.slice(0,19) : String(ts).slice(0,19);
-    result.push({ timestamp: tsStr, value: val });
+    var iso = dateToISO(ts);
+    if (!iso) continue;
+    result.push({ timestamp: iso, value: val });
   }
   return result;
 }
@@ -278,17 +289,14 @@ function parseEpori(rows) {
     if (dateRaw == null) continue;
     var dateStr = String(dateRaw).replace(/[^0-9]/g, '');
     if (dateStr.length !== 8) continue;
-    var dateFormatted = dateStr.slice(0,4) + '-' + dateStr.slice(4,6) + '-' + dateStr.slice(6,8);
+    var df = dateStr.slice(0,4) + '-' + dateStr.slice(4,6) + '-' + dateStr.slice(6,8);
     for (var t = 0; t < timeLabels.length; t++) {
-      var col = timeLabels[t].col;
-      var timeLabel = timeLabels[t].label;
-      var val = row[col];
+      var val = row[timeLabels[t].col];
       if (val == null || typeof val !== 'number') continue;
-      var parts = timeLabel.split(':');
+      var parts = timeLabels[t].label.split(':');
       var hh = ('0' + parseInt(parts[0], 10)).slice(-2);
-      var mm = (parts[1] || '00');
-      var ts = dateFormatted + 'T' + hh + ':' + mm + ':00';
-      result.push({ timestamp: ts, value: val });
+      var mm = parts[1] || '00';
+      result.push({ timestamp: df + 'T' + hh + ':' + mm + ':00', value: val });
     }
   }
   return result;
@@ -316,15 +324,35 @@ function handleFile(key, file) {
       }
       parsedData[key] = data;
       setStatus(key, 'success', file.name, info, null);
-      console.log('[' + key + '] 変換完了:', data.length, '件');
-      if (data.length > 0) { console.log('先頭:', data[0]); console.log('末尾:', data[data.length-1]); }
     } catch(err) {
       console.error(err);
       setStatus(key, 'error', file.name, null, '読み込み失敗: ' + err.message);
     }
   };
-  reader.onerror = function() { setStatus(key, 'error', file.name, null, 'ファイルの読み込みに失敗しました'); };
+  reader.onerror = function() { setStatus(key, 'error', file.name, null, '読み込みに失敗しました'); };
   reader.readAsArrayBuffer(file);
+}
+
+// ===== DropZone UI =====
+var uploadIconSVG = '<svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/></svg>';
+
+function setupZone(key) {
+  var dz = document.getElementById('dz-' + key);
+  var input = document.getElementById('input-' + key);
+  dz.addEventListener('click', function() { input.click(); });
+  dz.addEventListener('keydown', function(e) { if (e.key === 'Enter') input.click(); });
+  dz.addEventListener('dragover', function(e) { e.preventDefault(); dz.classList.add('dragging'); });
+  dz.addEventListener('dragleave', function() { dz.classList.remove('dragging'); });
+  dz.addEventListener('drop', function(e) {
+    e.preventDefault(); dz.classList.remove('dragging');
+    var file = e.dataTransfer.files[0];
+    if (file) handleFile(key, file);
+  });
+  input.addEventListener('change', function(e) {
+    var file = e.target.files[0];
+    if (file) handleFile(key, file);
+    input.value = '';
+  });
 }
 
 function setStatus(key, status, name, info, error) {
@@ -332,7 +360,7 @@ function setStatus(key, status, name, info, error) {
   var dz = document.getElementById('dz-' + key);
   var iconEl = document.getElementById('icon-' + key);
   var mainEl = document.getElementById('main-' + key);
-  var subEl = document.getElementById('sub-' + key);
+  var subEl  = document.getElementById('sub-' + key);
   var hintEl = document.getElementById('hint-' + key);
   dz.className = 'dropzone ' + status;
   if (status === 'loading') {
@@ -344,57 +372,298 @@ function setStatus(key, status, name, info, error) {
     mainEl.textContent = name; mainEl.className = 'dropzone-main success-text';
     subEl.textContent = info;
     hintEl.textContent = 'クリックで差し替え'; hintEl.className = 'dropzone-hint replace-hint';
-    updateSummary(key, name + ' -- ' + info);
+    updateSummaryItem(key, name + ' -- ' + info);
   } else if (status === 'error') {
     iconEl.innerHTML = '<span class="icon-error">&#10005;</span>';
     mainEl.textContent = '読み込み失敗'; mainEl.className = 'dropzone-main error-text';
     subEl.textContent = error;
     hintEl.textContent = 'クリックで再試行'; hintEl.className = 'dropzone-hint replace-hint';
-    updateSummary(key, 'エラー: ' + error);
+    updateSummaryItem(key, 'エラー: ' + error);
   }
   updateSummaryBar(); updateAnalyzeBtn();
 }
 
-function updateSummary(key, text) {
-  var item = document.getElementById('summary-' + key);
-  item.classList.remove('hidden');
+function updateSummaryItem(key, text) {
+  document.getElementById('summary-' + key).classList.remove('hidden');
   document.getElementById('summary-' + key + '-val').textContent = text;
 }
 
 function updateSummaryBar() {
-  var anyLoaded = state.ep !== 'idle' || state.ev !== 'idle' || state.epori !== 'idle';
-  document.getElementById('summary-bar').classList[anyLoaded ? 'remove' : 'add']('hidden');
+  var any = ['ep','ev','epori'].some(function(k){ return state[k] !== 'idle'; });
+  document.getElementById('summary-bar').classList[any ? 'remove' : 'add']('hidden');
 }
 
 function updateAnalyzeBtn() {
   var btn = document.getElementById('analyze-btn');
   var hint = document.getElementById('analyze-hint');
-  var readyCount = ['ep','ev','epori'].filter(function(k){ return state[k] === 'success'; }).length;
-  var ready = readyCount >= 2;
-  btn.disabled = !ready;
-  btn.className = 'analyze-btn' + (ready ? ' active' : '');
-  if (ready) hint.textContent = '';
-  else if (readyCount === 0) hint.textContent = '比較するファイルを2つ以上インポートしてください';
-  else hint.textContent = 'あと' + (2 - readyCount) + 'ファイルをインポートしてください';
+  var ready = ['ep','ev','epori'].filter(function(k){ return state[k] === 'success'; }).length;
+  var ok = ready >= 2;
+  btn.disabled = !ok;
+  btn.className = 'analyze-btn' + (ok ? ' active' : '');
+  hint.textContent = ok ? '' : (ready === 0 ? '比較するファイルを2つ以上インポートしてください' : 'あと' + (2 - ready) + 'ファイルをインポートしてください');
 }
 
 function resetAll() {
-  ['ep', 'ev', 'epori'].forEach(function(key) {
+  ['ep','ev','epori'].forEach(function(key) {
     state[key] = 'idle'; parsedData[key] = null;
     document.getElementById('dz-' + key).className = 'dropzone';
     document.getElementById('icon-' + key).innerHTML = uploadIconSVG;
-    var mainEl = document.getElementById('main-' + key);
-    mainEl.textContent = 'ファイルをドロップ'; mainEl.className = 'dropzone-main';
+    var m = document.getElementById('main-' + key);
+    m.textContent = 'ファイルをドロップ'; m.className = 'dropzone-main';
     document.getElementById('sub-' + key).textContent = 'または クリックして選択';
-    var hintEl = document.getElementById('hint-' + key);
-    hintEl.textContent = key === 'epori' ? '.csv / .xlsx' : '.xlsx / .xls';
-    hintEl.className = 'dropzone-hint';
+    var h = document.getElementById('hint-' + key);
+    h.textContent = key === 'epori' ? '.csv / .xlsx' : '.xlsx / .xls';
+    h.className = 'dropzone-hint';
     document.getElementById('summary-' + key).classList.add('hidden');
   });
   document.getElementById('summary-bar').classList.add('hidden');
+  document.getElementById('analysis-section').classList.add('hidden');
   updateAnalyzeBtn();
 }
 
+// ===== 分析セクション =====
+function startAnalysis() {
+  document.getElementById('analysis-section').classList.remove('hidden');
+  document.getElementById('analysis-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  switchTab('summary');
+}
+
+function switchTab(name) {
+  ['summary','detail','chart'].forEach(function(t) {
+    document.getElementById('tab-btn-' + t).classList[t === name ? 'add' : 'remove']('active');
+    document.getElementById('tab-' + t).classList[t === name ? 'remove' : 'add']('hidden');
+  });
+  if (name === 'summary') renderSummary();
+  else if (name === 'detail') { detailPage = 0; buildMergedData(); renderDetail(); }
+  else if (name === 'chart') renderChart();
+}
+
+// ===== 機能1: データ管理 =====
+function renderSummary() {
+  var loaded = ['ep','ev','epori'].filter(function(k){ return parsedData[k]; });
+  var rows = loaded.map(function(key) {
+    var data = parsedData[key];
+    if (!data || data.length === 0) return null;
+    var sorted = data.slice().sort(function(a,b){ return a.timestamp < b.timestamp ? -1 : 1; });
+    var minTs = sorted[0].timestamp;
+    var maxTs = sorted[sorted.length - 1].timestamp;
+    var expected = Math.round((new Date(maxTs) - new Date(minTs)) / (30 * 60 * 1000)) + 1;
+    var missing = expected - data.length;
+    return {
+      key: key,
+      label: LABELS[key],
+      start: minTs.replace('T', ' ').slice(0, 16),
+      end:   maxTs.replace('T', ' ').slice(0, 16),
+      count: data.length,
+      expected: expected,
+      missing: missing < 0 ? 0 : missing
+    };
+  }).filter(Boolean);
+
+  var html = '<table class="data-table"><thead><tr>'
+    + '<th>ファイル</th><th>開始</th><th>終了</th>'
+    + '<th>データ数</th><th>期待数 (30分刻み)</th><th>欠損数</th>'
+    + '</tr></thead><tbody>';
+  rows.forEach(function(r) {
+    var missingClass = r.missing > 0 ? ' class="cell-warn"' : '';
+    html += '<tr>'
+      + '<td><span class="file-badge" style="background:' + hexToRgba(COLORS[r.key], 0.15) + ';color:' + COLORS[r.key] + '">' + r.label + '</span></td>'
+      + '<td class="cell-mono">' + r.start + '</td>'
+      + '<td class="cell-mono">' + r.end + '</td>'
+      + '<td class="cell-num">' + r.count.toLocaleString() + '</td>'
+      + '<td class="cell-num">' + r.expected.toLocaleString() + '</td>'
+      + '<td class="cell-num"' + missingClass + '>' + r.missing.toLocaleString() + '</td>'
+      + '</tr>';
+  });
+  html += '</tbody></table>';
+  document.getElementById('tab-summary').innerHTML = html;
+}
+
+// ===== 機能2: データ詳細 =====
+function buildMergedData() {
+  var loaded = ['ep','ev','epori'].filter(function(k){ return parsedData[k]; });
+  tsMaps = {};
+  var tsSet = {};
+  loaded.forEach(function(key) {
+    tsMaps[key] = {};
+    parsedData[key].forEach(function(d) {
+      tsMaps[key][d.timestamp] = d.value;
+      tsSet[d.timestamp] = true;
+    });
+  });
+  mergedTs = Object.keys(tsSet).sort();
+}
+
+function renderDetail() {
+  var loaded = ['ep','ev','epori'].filter(function(k){ return parsedData[k]; });
+  var total = mergedTs.length;
+  var totalPages = Math.ceil(total / DETAIL_PAGE_SIZE);
+  var start = detailPage * DETAIL_PAGE_SIZE;
+  var end = Math.min(start + DETAIL_PAGE_SIZE, total);
+  var pageTs = mergedTs.slice(start, end);
+
+  var html = '<div class="table-info">全 ' + total.toLocaleString() + ' 行 / ' + DETAIL_PAGE_SIZE + '行ずつ表示</div>';
+  html += '<div class="table-scroll"><table class="data-table">';
+  html += '<thead><tr><th>タイムスタンプ</th>';
+  loaded.forEach(function(k) {
+    html += '<th><span class="file-badge" style="background:' + hexToRgba(COLORS[k],0.15) + ';color:' + COLORS[k] + '">' + LABELS[k] + '</span></th>';
+  });
+  html += '</tr></thead><tbody>';
+  pageTs.forEach(function(ts) {
+    html += '<tr><td class="cell-mono">' + ts.replace('T',' ').slice(0,16) + '</td>';
+    loaded.forEach(function(k) {
+      var v = tsMaps[k][ts];
+      html += v != null ? '<td class="cell-num">' + v.toFixed(4) + '</td>' : '<td class="cell-empty"></td>';
+    });
+    html += '</tr>';
+  });
+  html += '</tbody></table></div>';
+
+  // ページネーション
+  html += '<div class="pagination">';
+  html += '<button class="page-btn" onclick="changePage(-1)" ' + (detailPage === 0 ? 'disabled' : '') + '>&#8592; 前へ</button>';
+  html += '<span class="page-info">' + (detailPage + 1) + ' / ' + totalPages + ' ページ (' + (start+1) + '-' + end + '行)</span>';
+  html += '<button class="page-btn" onclick="changePage(1)" ' + (detailPage >= totalPages - 1 ? 'disabled' : '') + '>次へ &#8594;</button>';
+  html += '</div>';
+
+  document.getElementById('tab-detail').innerHTML = html;
+}
+
+function changePage(delta) {
+  detailPage += delta;
+  renderDetail();
+}
+
+// ===== 機能3: グラフ =====
+function renderChart() {
+  var container = document.getElementById('chart-container');
+  var canvas = document.getElementById('chart-canvas');
+  var loaded = ['ep','ev','epori'].filter(function(k){ return parsedData[k]; });
+  if (!loaded.length) return;
+
+  var W = container.clientWidth || 800;
+  var H = 420;
+  canvas.width = W;
+  canvas.height = H;
+  var ctx = canvas.getContext('2d');
+
+  var mt = 30, mr = 30, mb = 70, ml = 80;
+  var cw = W - ml - mr;
+  var ch = H - mt - mb;
+
+  // 全データからmin/max
+  var allTs = [], allVals = [];
+  loaded.forEach(function(k) {
+    parsedData[k].forEach(function(d) {
+      allTs.push(d.timestamp);
+      allVals.push(d.value);
+    });
+  });
+  var tsSet = {};
+  allTs.forEach(function(t){ tsSet[t] = true; });
+  var sortedTs = Object.keys(tsSet).sort();
+
+  var t0 = new Date(sortedTs[0]).getTime();
+  var t1 = new Date(sortedTs[sortedTs.length-1]).getTime();
+  var minV = Math.min.apply(null, allVals);
+  var maxV = Math.max.apply(null, allVals);
+  var vRange = maxV - minV || 1;
+  var vPad = vRange * 0.05;
+  minV -= vPad; maxV += vPad;
+
+  function tsToX(ts) { return ml + (new Date(ts).getTime() - t0) / (t1 - t0 || 1) * cw; }
+  function valToY(v) { return mt + ch - (v - minV) / (maxV - minV) * ch; }
+
+  ctx.clearRect(0, 0, W, H);
+
+  // 背景
+  ctx.fillStyle = '#fff';
+  ctx.fillRect(0, 0, W, H);
+
+  // Y グリッド & ラベル
+  var yTicks = 5;
+  for (var i = 0; i <= yTicks; i++) {
+    var v = minV + (maxV - minV) * i / yTicks;
+    var y = valToY(v);
+    ctx.strokeStyle = '#e2e8f0';
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(ml, y); ctx.lineTo(ml + cw, y); ctx.stroke();
+    ctx.fillStyle = '#64748b';
+    ctx.font = '11px sans-serif';
+    ctx.textAlign = 'right';
+    var label = Math.abs(v) >= 1000 ? (v/1000).toFixed(1)+'k' : v.toFixed(1);
+    ctx.fillText(label, ml - 8, y + 4);
+  }
+
+  // X ラベル
+  var xLabelCount = Math.min(8, sortedTs.length);
+  var step = Math.max(1, Math.floor(sortedTs.length / xLabelCount));
+  ctx.fillStyle = '#64748b';
+  ctx.font = '11px sans-serif';
+  ctx.textAlign = 'center';
+  for (var j = 0; j < sortedTs.length; j += step) {
+    var x = tsToX(sortedTs[j]);
+    var dateLabel = sortedTs[j].slice(5, 10).replace('-', '/'); // MM/DD
+    ctx.fillText(dateLabel, x, H - mb + 18);
+    ctx.strokeStyle = '#f1f5f9';
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(x, mt); ctx.lineTo(x, mt + ch); ctx.stroke();
+  }
+
+  // 軸
+  ctx.strokeStyle = '#94a3b8';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(ml, mt); ctx.lineTo(ml, mt + ch); ctx.lineTo(ml + cw, mt + ch);
+  ctx.stroke();
+
+  // データライン
+  loaded.forEach(function(key) {
+    var data = parsedData[key].slice().sort(function(a,b){ return a.timestamp < b.timestamp ? -1 : 1; });
+    ctx.strokeStyle = COLORS[key];
+    ctx.lineWidth = 1.8;
+    ctx.lineJoin = 'round';
+    ctx.beginPath();
+    var started = false;
+    data.forEach(function(d) {
+      var x = tsToX(d.timestamp);
+      var y = valToY(d.value);
+      if (!started) { ctx.moveTo(x, y); started = true; }
+      else ctx.lineTo(x, y);
+    });
+    ctx.stroke();
+  });
+
+  // 凡例
+  var lx = ml + 12, ly = mt + 12;
+  loaded.forEach(function(key, i) {
+    var bx = lx, by = ly + i * 22;
+    ctx.fillStyle = COLORS[key];
+    ctx.fillRect(bx, by - 2, 22, 3);
+    // 丸
+    ctx.beginPath();
+    ctx.arc(bx + 11, by - 0.5, 4, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#334155';
+    ctx.font = 'bold 12px sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillText(LABELS[key], bx + 30, by + 4);
+    // データ件数
+    ctx.fillStyle = '#94a3b8';
+    ctx.font = '11px sans-serif';
+    ctx.fillText(parsedData[key].length.toLocaleString() + '件', bx + 72, by + 4);
+  });
+}
+
+// ===== ユーティリティ =====
+function hexToRgba(hex, a) {
+  var r = parseInt(hex.slice(1,3),16);
+  var g = parseInt(hex.slice(3,5),16);
+  var b = parseInt(hex.slice(5,7),16);
+  return 'rgba(' + r + ',' + g + ',' + b + ',' + a + ')';
+}
+
+// ===== 初期化 =====
 setupZone('ep'); setupZone('ev'); setupZone('epori');
 </script>
 </body>
