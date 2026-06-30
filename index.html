@@ -73,6 +73,17 @@ body { margin: 0; font-family: 'Segoe UI', sans-serif; background: #f8fafc; }
 .analyze-btn.active:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(99,102,241,.4); }
 .analyze-hint { font-size: 12px; color: #94a3b8; text-align: center; }
 
+/* Period filter */
+.period-filter { padding: 14px 20px; border-bottom: 1px solid #e2e8f0; background: #f8fafc; display: flex; align-items: center; flex-wrap: wrap; gap: 10px; }
+.period-label { font-size: 12px; font-weight: 700; color: #475569; white-space: nowrap; }
+.period-sep { font-size: 12px; color: #94a3b8; }
+.period-input { font-size: 12px; color: #334155; border: 1px solid #e2e8f0; border-radius: 7px; padding: 5px 8px; background: #fff; outline: none; cursor: pointer; }
+.period-input:focus { border-color: #3b82f6; }
+.period-apply { padding: 5px 14px; border-radius: 7px; border: none; background: #3b82f6; color: #fff; font-size: 12px; font-weight: 600; cursor: pointer; }
+.period-apply:hover { background: #2563eb; }
+.period-reset { padding: 5px 10px; border-radius: 7px; border: 1px solid #e2e8f0; background: #fff; color: #64748b; font-size: 12px; cursor: pointer; }
+.period-reset:hover { border-color: #94a3b8; color: #334155; }
+
 /* Analysis section */
 .analysis-section { background: #fff; border: 1px solid #e2e8f0; border-radius: 16px; overflow: hidden; }
 .tabs { display: flex; border-bottom: 1px solid #e2e8f0; background: #f8fafc; }
@@ -213,6 +224,13 @@ body { margin: 0; font-family: 'Segoe UI', sans-serif; background: #f8fafc; }
     <!-- Step 2: Analysis -->
     <div id="analysis-section" class="analysis-section hidden">
       <div class="step-label" style="padding:16px 24px 0;"><span class="step-badge">Step 2</span>分析結果</div>
+      <div class="period-filter">
+        <span class="period-label">解析期間</span>
+        <input type="datetime-local" id="period-start" class="period-input" oninput="applyPeriod()">
+        <span class="period-sep">〜</span>
+        <input type="datetime-local" id="period-end" class="period-input" oninput="applyPeriod()">
+        <button class="period-reset" onclick="resetPeriod()">全期間</button>
+      </div>
       <div class="tabs">
         <button id="tab-btn-summary" class="tab-btn active" onclick="switchTab('summary')">&#128202; データ管理</button>
         <button id="tab-btn-chart"   class="tab-btn"        onclick="switchTab('chart')">&#128200; グラフ</button>
@@ -462,21 +480,67 @@ function resetAll() {
   });
   document.getElementById('summary-bar').classList.add('hidden');
   document.getElementById('analysis-section').classList.add('hidden');
+  document.getElementById('period-start').value = '';
+  document.getElementById('period-end').value = '';
   updateAnalyzeBtn();
 }
 
 // ===== 分析セクション =====
+// ===== 期間フィルター =====
+function getFilteredData(key) {
+  var data = parsedData[key];
+  if (!data) return null;
+  var startEl = document.getElementById('period-start');
+  var endEl   = document.getElementById('period-end');
+  var startMs = startEl && startEl.value ? parseTs(startEl.value.replace('T', ' ') + ':00') : -Infinity;
+  var endMs   = endEl   && endEl.value   ? parseTs(endEl.value.replace('T', ' ')   + ':00') :  Infinity;
+  return data.filter(function(d) {
+    var ms = parseTs(d.timestamp);
+    return ms >= startMs && ms <= endMs;
+  });
+}
+
+function applyPeriod() {
+  rawPage = 0;
+  var activeTab = document.querySelector('.tab-btn.active');
+  var tabName = activeTab ? activeTab.id.replace('tab-btn-', '') : 'summary';
+  switchTab(tabName);
+}
+
+function resetPeriod() {
+  document.getElementById('period-start').value = '';
+  document.getElementById('period-end').value = '';
+  applyPeriod();
+}
+
+function setDefaultPeriod() {
+  // インポート済みデータ全体の最小・最大を期間欄の初期値にセット
+  var allTs = [];
+  ['ep','ev','epori'].forEach(function(k) {
+    if (parsedData[k] && parsedData[k].length) {
+      allTs.push(parsedData[k][0].timestamp, parsedData[k][parsedData[k].length-1].timestamp);
+    }
+  });
+  if (!allTs.length) return;
+  var minTs = allTs.reduce(function(a,b){ return a < b ? a : b; });
+  var maxTs = allTs.reduce(function(a,b){ return a > b ? a : b; });
+  var toInput = function(ts) { return ts.slice(0,16); }; // "YYYY-MM-DDTHH:MM"
+  var startEl = document.getElementById('period-start');
+  var endEl   = document.getElementById('period-end');
+  if (!startEl.value) startEl.value = toInput(minTs);
+  if (!endEl.value)   endEl.value   = toInput(maxTs);
+}
+
 function autoPreview() {
   var ready = ['ep','ev','epori'].filter(function(k){ return state[k] === 'success'; }).length;
   if (ready < 1) return;
   var section = document.getElementById('analysis-section');
   var isHidden = section.classList.contains('hidden');
   section.classList.remove('hidden');
-  // 現在表示中のタブを再描画（グラフは30ms後）
+  setDefaultPeriod();
   var activeTab = document.querySelector('.tab-btn.active');
   var tabName = activeTab ? activeTab.id.replace('tab-btn-', '') : 'summary';
   switchTab(tabName);
-  // 初回表示時のみスクロール
   if (isHidden) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
@@ -504,7 +568,7 @@ function renderSummary() {
 
   // ── サマリーテーブル ──
   var rows = loaded.map(function(key) {
-    var data = parsedData[key];
+    var data = getFilteredData(key);
     if (!data || data.length === 0) return null;
     var minTs = data[0].timestamp;
     var maxTs = data[data.length - 1].timestamp;
@@ -537,7 +601,7 @@ function renderSummary() {
   html += '</tbody></table>';
 
   // ── 生データテーブル ──
-  buildMergedData();
+  buildMergedData(true);
   var total = mergedTs.length;
   var totalPages = Math.ceil(total / RAW_PAGE_SIZE);
   rawPage = Math.min(rawPage, Math.max(0, totalPages - 1));
@@ -577,13 +641,14 @@ function changeRawPage(delta) {
 }
 
 // ===== 機能2: データ詳細 =====
-function buildMergedData() {
+function buildMergedData(useFilter) {
   var loaded = ['ep','ev','epori'].filter(function(k){ return parsedData[k]; });
   tsMaps = {};
   var tsSet = {};
   loaded.forEach(function(key) {
     tsMaps[key] = {};
-    parsedData[key].forEach(function(d) {
+    var data = useFilter ? getFilteredData(key) : parsedData[key];
+    data.forEach(function(d) {
       tsMaps[key][d.timestamp] = d.value;
       tsSet[d.timestamp] = true;
     });
@@ -648,17 +713,18 @@ function renderChart() {
 
   var pad = function(n){ return ('0'+n).slice(-2); };
 
-  // Y軸の最小・最大をデータから算出
+  // Y軸の最小・最大をフィルター済みデータから算出
   var allValues = [];
   loaded.forEach(function(key) {
-    parsedData[key].forEach(function(d) { allValues.push(d.value); });
+    var fd = getFilteredData(key) || [];
+    fd.forEach(function(d) { allValues.push(d.value); });
   });
   var yMin = Math.min.apply(null, allValues);
   var yMax = Math.max.apply(null, allValues);
   var margin = (yMax - yMin) * 0.05 || 1;
 
   var datasets = loaded.map(function(key) {
-    var data = parsedData[key];
+    var data = getFilteredData(key) || [];
     return {
       label: LABELS[key],
       data: data.map(function(d) { return { x: parseTs(d.timestamp), y: d.value }; }),
