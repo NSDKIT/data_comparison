@@ -321,18 +321,22 @@ function parseEpori(rows) {
   for (var c = timeColStart; c < headerRow.length; c++) {
     var label = headerRow[c];
     if (label == null) break;
-    var hh, mm;
+    var hh, mm, hhNum, mmNum;
     if (typeof label === 'number') {
-      // Excel時間値 (0=0:00, 0.020833=0:30, ...) → HH:MM
+      // Excel時間値 (0=0:00, 0.020833=0:30, ...)
       var totalMin = Math.round(label * 24 * 60);
-      hh = ('0' + Math.floor(totalMin / 60)).slice(-2);
-      mm = ('0' + (totalMin % 60)).slice(-2);
+      hhNum = Math.floor(totalMin / 60);
+      mmNum = totalMin % 60;
     } else {
       // 文字列 "0:00", "0:30", ...
       var parts = String(label).split(':');
-      hh = ('0' + parseInt(parts[0], 10)).slice(-2);
-      mm = parts[1] || '00';
+      hhNum = parseInt(parts[0], 10);
+      mmNum = parseInt(parts[1] || '0', 10);
     }
+    // 不正な時刻（NaN・24時以上）はスキップ
+    if (isNaN(hhNum) || isNaN(mmNum) || hhNum >= 24 || mmNum >= 60) continue;
+    hh = ('0' + hhNum).slice(-2);
+    mm = ('0' + mmNum).slice(-2);
     timeLabels.push({ col: c, hh: hh, mm: mm });
   }
   for (var i = 1; i < rows.length; i++) {
