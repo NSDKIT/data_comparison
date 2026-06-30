@@ -100,6 +100,8 @@ body { margin: 0; font-family: 'Segoe UI', sans-serif; background: #f8fafc; }
 .page-btn:hover:not([disabled]) { border-color: #3b82f6; color: #3b82f6; }
 .page-btn[disabled] { opacity: 0.4; cursor: not-allowed; }
 .page-info { font-size: 13px; color: #64748b; }
+.raw-section-title { font-size: 13px; font-weight: 700; color: #334155; margin: 24px 0 10px; display: flex; align-items: center; gap: 10px; }
+.raw-total { font-size: 12px; font-weight: 500; color: #64748b; }
 
 .chart-container { width: 100%; min-height: 420px; }
 
@@ -492,23 +494,25 @@ function switchTab(name) {
 }
 
 // ===== 機能1: データ管理 =====
+var rawPage = 0;
+var RAW_PAGE_SIZE = 200;
+
 function renderSummary() {
   var loaded = ['ep','ev','epori'].filter(function(k){ return parsedData[k]; });
+
+  // ── サマリーテーブル ──
   var rows = loaded.map(function(key) {
     var data = parsedData[key];
     if (!data || data.length === 0) return null;
-    var sorted = data.slice().sort(function(a,b){ return a.timestamp < b.timestamp ? -1 : 1; });
-    var minTs = sorted[0].timestamp;
-    var maxTs = sorted[sorted.length - 1].timestamp;
+    var minTs = data[0].timestamp;
+    var maxTs = data[data.length - 1].timestamp;
     var expected = Math.round((parseTs(maxTs) - parseTs(minTs)) / (30 * 60 * 1000)) + 1;
     var missing = expected - data.length;
     return {
-      key: key,
-      label: LABELS[key],
-      start: minTs.replace('T', ' ').slice(0, 16),
-      end:   maxTs.replace('T', ' ').slice(0, 16),
-      count: data.length,
-      expected: expected,
+      key: key, label: LABELS[key],
+      start: minTs.replace('T',' ').slice(0,16),
+      end:   maxTs.replace('T',' ').slice(0,16),
+      count: data.length, expected: expected,
       missing: missing < 0 ? 0 : missing
     };
   }).filter(Boolean);
@@ -520,7 +524,7 @@ function renderSummary() {
   rows.forEach(function(r) {
     var missingClass = r.missing > 0 ? ' class="cell-warn"' : '';
     html += '<tr>'
-      + '<td><span class="file-badge" style="background:' + hexToRgba(COLORS[r.key], 0.15) + ';color:' + COLORS[r.key] + '">' + r.label + '</span></td>'
+      + '<td><span class="file-badge" style="background:' + hexToRgba(COLORS[r.key],0.15) + ';color:' + COLORS[r.key] + '">' + r.label + '</span></td>'
       + '<td class="cell-mono">' + r.start + '</td>'
       + '<td class="cell-mono">' + r.end + '</td>'
       + '<td class="cell-num">' + r.count.toLocaleString() + '</td>'
@@ -529,7 +533,45 @@ function renderSummary() {
       + '</tr>';
   });
   html += '</tbody></table>';
+
+  // ── 生データテーブル ──
+  buildMergedData();
+  var total = mergedTs.length;
+  var totalPages = Math.ceil(total / RAW_PAGE_SIZE);
+  rawPage = Math.min(rawPage, Math.max(0, totalPages - 1));
+  var start = rawPage * RAW_PAGE_SIZE;
+  var end = Math.min(start + RAW_PAGE_SIZE, total);
+  var pageTs = mergedTs.slice(start, end);
+
+  html += '<div class="raw-section-title">生データ'
+    + '<span class="raw-total">全 ' + total.toLocaleString() + ' 行</span></div>';
+  html += '<div class="table-scroll"><table class="data-table"><thead><tr><th>タイムスタンプ</th>';
+  loaded.forEach(function(k) {
+    html += '<th><span class="file-badge" style="background:' + hexToRgba(COLORS[k],0.15) + ';color:' + COLORS[k] + '">' + LABELS[k] + '</span></th>';
+  });
+  html += '</tr></thead><tbody>';
+  pageTs.forEach(function(ts) {
+    html += '<tr><td class="cell-mono">' + ts.replace('T',' ').slice(0,16) + '</td>';
+    loaded.forEach(function(k) {
+      var v = tsMaps[k][ts];
+      html += v != null ? '<td class="cell-num">' + v.toFixed(4) + '</td>' : '<td class="cell-empty"></td>';
+    });
+    html += '</tr>';
+  });
+  html += '</tbody></table></div>';
+
+  html += '<div class="pagination">';
+  html += '<button class="page-btn" onclick="changeRawPage(-1)" ' + (rawPage === 0 ? 'disabled' : '') + '>&#8592; 前へ</button>';
+  html += '<span class="page-info">' + (rawPage+1) + ' / ' + totalPages + ' ページ（' + (start+1) + '–' + end + '行）</span>';
+  html += '<button class="page-btn" onclick="changeRawPage(1)" ' + (rawPage >= totalPages-1 ? 'disabled' : '') + '>次へ &#8594;</button>';
+  html += '</div>';
+
   document.getElementById('tab-summary').innerHTML = html;
+}
+
+function changeRawPage(delta) {
+  rawPage += delta;
+  renderSummary();
 }
 
 // ===== 機能2: データ詳細 =====
