@@ -701,10 +701,15 @@ function renderChart() {
       interaction: { mode: 'index', intersect: false },
       scales: {
         x: {
-          type: 'time',
-          time: { tooltipFormat: 'MM/dd HH:mm', displayFormats: { hour: 'M/d HH:mm', day: 'M/d', month: 'yyyy/M' } },
-          adapters: { date: {} },
-          ticks: { maxTicksLimit: 8, color: '#64748b', source: 'auto' },
+          type: 'linear',
+          ticks: {
+            maxTicksLimit: 8,
+            color: '#64748b',
+            callback: function(val) {
+              var d = new Date(val);
+              return (d.getMonth()+1) + '/' + d.getDate();
+            }
+          },
           grid: { color: '#e2e8f0' }
         },
         y: {
@@ -714,7 +719,18 @@ function renderChart() {
       },
       plugins: {
         legend: { labels: { color: '#334155', font: { size: 12 } } },
-        tooltip: { mode: 'index', intersect: false },
+        tooltip: {
+          mode: 'index',
+          intersect: false,
+          callbacks: {
+            title: function(items) {
+              if (!items.length) return '';
+              var d = new Date(items[0].parsed.x);
+              var pad = function(n){ return ('0'+n).slice(-2); };
+              return d.getFullYear()+'/'+pad(d.getMonth()+1)+'/'+pad(d.getDate())+' '+pad(d.getHours())+':'+pad(d.getMinutes());
+            }
+          }
+        },
         zoom: {
           pan: { enabled: true, mode: 'x' },
           zoom: {
