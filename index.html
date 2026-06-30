@@ -363,6 +363,7 @@ function handleFile(key, file) {
       data.sort(function(a, b) { return a.timestamp < b.timestamp ? -1 : 1; });
       parsedData[key] = data;
       setStatus(key, 'success', file.name, info, null);
+      autoPreview();
     } catch(err) {
       console.error(err);
       setStatus(key, 'error', file.name, null, '読み込み失敗: ' + err.message);
@@ -461,6 +462,20 @@ function resetAll() {
 }
 
 // ===== 分析セクション =====
+function autoPreview() {
+  var ready = ['ep','ev','epori'].filter(function(k){ return state[k] === 'success'; }).length;
+  if (ready < 1) return;
+  var section = document.getElementById('analysis-section');
+  var isHidden = section.classList.contains('hidden');
+  section.classList.remove('hidden');
+  // 現在表示中のタブを再描画（グラフは30ms後）
+  var activeTab = document.querySelector('.tab-btn.active');
+  var tabName = activeTab ? activeTab.id.replace('tab-btn-', '') : 'summary';
+  switchTab(tabName);
+  // 初回表示時のみスクロール
+  if (isHidden) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
 function startAnalysis() {
   document.getElementById('analysis-section').classList.remove('hidden');
   document.getElementById('analysis-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
